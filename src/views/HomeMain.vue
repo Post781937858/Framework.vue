@@ -310,7 +310,7 @@ export default {
 }
 .main-top-head-bar{
   position: relative;
- padding-right: 41px;
+ padding-right: 45px;
  padding-left: 10px;;
  height: 44px;
  line-height: 44px;

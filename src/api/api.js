@@ -4,9 +4,17 @@ const _apiUrl = {
 
   Login: '/api/Login',
 
+  LoginGetToken: '/api/Login/GetToken',
+
   Menus: '/api/Menu',
 
   MenusAll: '/api/Menu/All',
+
+  MenusPower: '/api/Menu/Power',
+
+  MenusUserPower: '/api/Menu/UserPower',
+
+  SaveRolePower: '/api/PowerRole/SaveRolePower',
 
   Power: '/api/PowerRole',
 
@@ -22,7 +30,7 @@ const _apiUrl = {
 
 let base = ''
 // 如果是IIS部署，用这个，因为 IIS 只能是 CORS 跨域，不能代理
-// base = process.env.NODE_ENV === 'production' ? 'http:/127.0.0.1:5000' : ''
+// base = process.env.NODE_ENV === 'production' ? 'http:/127.0.0.1:5000' : '' 118.31.71.216
 base = 'http://127.0.0.1:5001'
 // 请求发送拦截，把数据发送给后台之前做些什么......
 axios.interceptors.request.use((request) => {
@@ -40,13 +48,17 @@ axios.interceptors.response.use((response) => {
   return response
 }, function (error) {
   let message = '请求异常'
+  console.log(error)
   if (error.response) {
     switch (error.response.status) {
       case 500:
         message = '服务器错误'
         break
       case 401:
-        message = '无权限'
+        message = '很抱歉，您没有此操作的权限'
+        break
+      case 403:
+        message = '您的权限等级不够，请联系管理员'
         break
     }
   } else {

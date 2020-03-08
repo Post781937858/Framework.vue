@@ -6,15 +6,15 @@
    <div class="Login-content">
      <div  class="card-header">系统登录</div>
       <div class="form-content">
-         <el-form   label-position="top"  label-width="80px" :model="formdata">
-        <el-form-item label="账号">
-          <el-input v-model="formdata.username"  style="height: 40px"  placeholder="请输入账号"></el-input>
+         <el-form   label-position="top"  label-width="80px" :model="formdata" :rules="rules" ref='ruleForm'>
+        <el-form-item label="账号" prop='userNumber'>
+          <el-input v-model="formdata.userNumber"  style="height: 40px"  placeholder="请输入账号"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop='password'>
           <el-input placeholder="请输入密码"  style="height: 40px"  v-model="formdata.password" show-password></el-input>
         </el-form-item>
       <el-form-item>
-        <el-button class="Submit" :loading="Isloading" type="primary" @click="onSubmit">{{formdata.msg}}</el-button>
+        <el-button class="Submit" :loading="Isloading" type="primary" @click="onSubmit">{{msg}}</el-button>
       </el-form-item>
       </el-form>
       <div class="form-bottom">
@@ -33,44 +33,69 @@ export default {
   data () {
     return {
       formdata: {
-        username: '',
-        password: '',
-        msg: '立即登录'
+        userNumber: '',
+        password: ''
       },
+      msg: '立即登录',
       Isloading: false,
-      routerList: []
+      routerList: [],
+      rules: { // 表单验证
+        userNumber: [
+          { required: true, message: '请输入账号', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
     onSubmit () {
-      this.Isloading = true
-      this.formdata.msg = '系统登录中'
-      localStorage.clear()
-      router.resetRouter()
-      api.Query(api.apiUrl.Login, data => {
-        if (data.state === 200) {
-          localStorage.setItem('Authorization', data.data)
-          api.Query(api.apiUrl.Menus, data => {
-            localStorage.setItem('menus', JSON.stringify(data.data))
-            this.analysisRouter(data.data)
-            localStorage.setItem('Usermenus', JSON.stringify(this.routerList))
-            router.$addRoutes(filterAsyncRouter(JSON.parse(localStorage.getItem('Usermenus'))))
-            // setTimeout(() => {
-            //   this.$notify({
-            //     title: '成功',
-            //     message: '欢迎登录，系统初始化成功',
-            //     duration: 3000,
-            //     type: 'success'
-            //   })
-            //   this.$router.push({ name: 'HomeMain' })
-            // }, 500)
-            this.$router.push({ name: 'HomeMain' })
-          }, null, error => { console.error(error) })
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          this.Isloading = true
+          this.msg = '系统登录中'
+          localStorage.clear()
+          router.resetRouter()
+          api.add(api.apiUrl.Login, data => {
+            if (data.state === 200) {
+              localStorage.setItem('Authorization', data.data)
+              api.Query(api.apiUrl.Menus, data => {
+                localStorage.setItem('menus', JSON.stringify(data.data))
+                this.analysisRouter(data.data)
+                localStorage.setItem('Usermenus', JSON.stringify(this.routerList))
+                router.$addRoutes(filterAsyncRouter(JSON.parse(localStorage.getItem('Usermenus'))))
+                // setTimeout(() => {
+                //   this.$notify({
+                //     title: '成功',
+                //     message: '欢迎登录，系统初始化成功',
+                //     duration: 3000,
+                //     type: 'success'
+                //   })
+                //   this.$router.push({ name: 'HomeMain' })
+                // }, 500)
+                this.$router.push({ name: 'HomeMain' })
+              }, null, error => {
+                this.Isloading = false
+                this.msg = '立即登录'
+                console.error(error)
+              })
+            } else {
+              this.$notify({
+                message: data.msg,
+                type: 'error'
+              })
+              this.Isloading = false
+              this.msg = '立即登录'
+            }
+          }, this.formdata, error => {
+            this.Isloading = false
+            this.msg = '立即登录'
+            console.log(error)
+          })
+        } else {
+          return false
         }
-      }, null, error => {
-        this.Isloading = false
-        this.formdata.msg = '立即登录'
-        console.log(error)
       })
     },
     // 递归获取路由树

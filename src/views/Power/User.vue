@@ -74,15 +74,7 @@
         <template slot-scope="scope" >
           <div><a  @click="AppEdit(scope.$index, scope.row)">编辑</a>
           <div class="ivu-divider ivu-divider-vertical ivu-divider-default"></div>
-          <el-popconfirm
-          @onConfirm='AppDelete(scope.$index, scope.row)'
-        confirmButtonText='好的'
-        cancelButtonText='不用了'
-        icon="el-icon-info"
-        title="确定删除当前角色吗？"
-        iconColor="red">
-    <a slot="reference">删除</a>
-    </el-popconfirm>
+           <a  @click="AppDelete(scope.$index, scope.row)">删除</a>
           </div>
       </template>
     </el-table-column>
@@ -283,8 +275,14 @@ export default {
     },
     // 删除
     AppDelete (index, row) {
-      this.Rowthis = row
-      this.dalete([this.Rowthis])
+      this.$confirm('此操作将删除所选内容, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.Rowthis = row
+        this.dalete([this.Rowthis])
+      }).catch(() => {})
     },
     Bardelete () {
       if (this.TableSelect.length > 0) {

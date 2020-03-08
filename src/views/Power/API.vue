@@ -52,6 +52,7 @@
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
             <el-table-column prop="title" label="名称" align="center"></el-table-column>
             <el-table-column prop="icon" label="图标" align="center"></el-table-column>
+            <el-table-column prop="method" label="接口类型" align="center"></el-table-column>
             <el-table-column prop="url" label="地址" align="center"></el-table-column>
               <el-table-column prop="menutype" label="类型"   align="center">
                 <template slot-scope="scope">
@@ -69,15 +70,7 @@
         <template slot-scope="scope" >
           <div><a  @click="AppEdit(scope.$index, scope.row)">编辑</a>
           <div class="ivu-divider ivu-divider-vertical ivu-divider-default"></div>
-          <el-popconfirm
-          @onConfirm='AppDelete(scope.$index, scope.row)'
-        confirmButtonText='好的'
-        cancelButtonText='不用了'
-        icon="el-icon-info"
-        title="确定删除当前角色吗？"
-        iconColor="red">
-    <a slot="reference">删除</a>
-    </el-popconfirm>
+           <a   @click="AppDelete(scope.$index, scope.row)">删除</a>
           </div>
       </template>
     </el-table-column>
@@ -96,7 +89,20 @@
         <el-input placeholder="名称" v-model="ruleForm.title"></el-input>
       </el-form-item>
       <el-form-item label="图标" prop='icon'>
-        <el-input placeholder="图标" v-model="ruleForm.icon"></el-input>
+        <el-input placeholder="图标" v-model="ruleForm.icon" ></el-input>
+      </el-form-item>
+      <el-form-item label="接口类型" prop='method'>
+        <el-input placeholder="get post put delete"  v-model="ruleForm.method"></el-input>
+      </el-form-item>
+     <el-form-item label="父级" prop='menuid'>
+        <el-cascader :options="cascaderoptions" :props="{
+          children: 'submenu',
+          label: 'title',
+          value:'id',
+          checkStrictly: true,
+          multiple:false,
+          emitPath:false
+        }" v-model="ruleForm.menuid" clearable ref="cascader"></el-cascader>
       </el-form-item>
       <el-form-item label="地址" prop='url'>
         <el-input placeholder="地址" value="#" v-model="ruleForm.url"></el-input>
@@ -115,7 +121,7 @@
          <el-option label="接口" :value="2" ></el-option>
       </el-select>
       </el-form-item>
-      <el-form-item label="父级" prop='menuid'>
+      <!-- <el-form-item label="父级" prop='menuid'>
       <el-select placeholder="请选择"  v-model="ruleForm.menuid">
       <el-option label="无" :value="999"></el-option>
       <el-option v-for="items in roleoptions"
@@ -123,7 +129,7 @@
       :label="items.label"
       :value="items.value" ></el-option>
       </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="排序" prop='no'>
         <el-input placeholder="排序" v-model="ruleForm.no"></el-input>
       </el-form-item>
@@ -185,14 +191,16 @@ export default {
         url: '/',
         state: 200,
         menutype: null,
-        menuid: 999,
+        menuid: null,
         explain: '',
+        method: '',
         no: 0
       },
       Rowthis: {}, // 当前角色数据
       Isedit: false, // 是否编辑
       TableSelect: [],
-      roleoptions: []
+      roleoptions: [],
+      cascaderoptions: []
     }
   },
   created  () {
@@ -227,6 +235,7 @@ export default {
       this.ruleForm.menuid = row.menuid
       this.ruleForm.explain = row.explain
       this.ruleForm.no = row.no
+      this.ruleForm.method = row.method
       this.dialogVisible = true
     },
     // 新增
@@ -237,8 +246,14 @@ export default {
     },
     // 删除
     AppDelete (index, row) {
-      this.Rowthis = row
-      this.dalete([this.Rowthis])
+      this.$confirm('此操作将删除所选内容, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.Rowthis = row
+        this.dalete([this.Rowthis])
+      }).catch(() => {})
     },
     Bardelete () {
       if (this.TableSelect.length > 0) {
@@ -298,9 +313,10 @@ export default {
       this.ruleForm.url = '/'
       this.ruleForm.state = 200
       this.ruleForm.menutype = null
-      this.ruleForm.menuid = 999
+      this.ruleForm.menuid = null
       this.ruleForm.explain = ''
       this.ruleForm.no = 0
+      this.ruleForm.method = ''
       this.$refs.ruleForm.clearValidate()
     },
     // 表单提交
@@ -328,10 +344,14 @@ export default {
           }
         })
       }, this.QueryForm, error => { this.loading = false; console.error(error) })
+      api.Query(api.apiUrl.MenusPower, data => {
+        this.cascaderoptions = data.data
+      }, this.QueryForm, error => { this.loading = false; console.error(error) })
     },
     // 添加角色
     Add () {
       this.ruleForm.no = parseInt(this.ruleForm.no)
+      this.ruleForm.menuid = parseInt(this.ruleForm.menuid == null ? 0 : this.ruleForm.menuid)
       api.add(api.apiUrl.Menus, data => {
         this.QueryData()
         this.$notify({
@@ -347,6 +367,19 @@ export default {
     },
     // 更新角色
     update () {
+      let CheckedNodes = this.$refs.cascader.getCheckedNodes()
+      if (CheckedNodes.length > 0) {
+        if (CheckedNodes[0] != null && (CheckedNodes[0].data.id === this.ruleForm.id)) {
+          this.$notify({
+            title: '提示',
+            message: '父子级关系错误',
+            duration: 2000,
+            type: 'error'
+          })
+          return
+        }
+      }
+      this.ruleForm.menuid = parseInt(this.ruleForm.menuid == null ? 0 : this.ruleForm.menuid)
       api.update(api.apiUrl.Menus, data => {
         this.QueryData()
         this.$notify({

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/Login'
-import HomeMain from '@/views/Home/index'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -19,7 +19,7 @@ const routes = [
   {
     path: '/HomeMain',
     name: 'HomeMain',
-    component: HomeMain,
+    component: resolve => require(['@/views/Home/index'], resolve),
     meta: {
       title: 'HomeMain',
       NoNeedHome: false,
@@ -40,7 +40,7 @@ const routes = [
   },
   {
     path: '/404',
-    component: () => import(/* webpackChunkName: "404" */ '@/views/404'),
+    component: () => resolve => require(['@/views/404'], resolve),
     name: '404',
     meta: {
       title: '404',
@@ -66,7 +66,7 @@ router.onReady(() => {
 export function filterAsyncRouter (asyncRouterMap) {
   const accessedRouters = asyncRouterMap.filter(route => {
     try {
-      route.component = () => import('@/views' + route.path + '.vue')
+      route.component = resolve => require(['@/views' + route.path + '.vue'], resolve)
     } catch (error) {
       console.info('%c 当前路由 ' + route.url + '.vue 不存在，因此如法导入组件，请检查接口数据和组件是否匹配，并重新登录，清空缓存!', 'color:red')
     }

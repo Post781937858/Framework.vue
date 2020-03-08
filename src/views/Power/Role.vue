@@ -23,6 +23,7 @@
    <el-button type="primary" icon="el-icon-plus" @click="BarAdd">新增</el-button>
    <el-button type="primary" icon="el-icon-edit" @click="BarEdit">编辑</el-button>
    <el-button type="primary" icon="el-icon-delete" @click="Bardelete">删除</el-button>
+  <el-button type="primary" icon="el-icon-s-promotion" @click="Power" >分配权限</el-button>
    </el-button-group>
        </div>
      <div class="app-card-body app-card-list ">
@@ -44,15 +45,7 @@
         <template slot-scope="scope" >
           <div><a  @click="AppEdit(scope.$index, scope.row)">编辑</a>
           <div class="ivu-divider ivu-divider-vertical ivu-divider-default"></div>
-          <el-popconfirm
-          @onConfirm='AppDelete(scope.$index, scope.row)'
-        confirmButtonText='好的'
-        cancelButtonText='不用了'
-        icon="el-icon-info"
-        title="确定删除当前角色吗？"
-        iconColor="red">
-    <a slot="reference">删除</a>
-    </el-popconfirm>
+             <a   @click="AppDelete(scope.$index, scope.row)">删除</a>
           </div>
       </template>
     </el-table-column>
@@ -91,6 +84,39 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
       </span>
     </el-dialog>
+      <el-dialog
+      title="权限分配"
+      :append-to-body='true'
+      :visible.sync="PowerdialogVisible"
+      width="80%"  >
+      <div class="Powertree">
+        <el-tree
+      :data="Treedata"
+      show-checkbox
+      node-key="id"
+       ref="tree"
+      :default-checked-keys='checkedTree'
+      :props="{
+          children: 'submenu',
+          label: 'title'
+        }"
+      default-expand-all
+      :expand-on-click-node="false">
+      <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span class="treeNode-label">{{ node.label }}</span>
+        <span class="treeNode">
+          <template >
+             <el-checkbox v-for="item in data.submenuApi"  v-model="item.checked"  :key="item.id" >{{item.title}}</el-checkbox>
+          </template>
+        </span>
+      </span>
+    </el-tree>
+      </div>
+       <span slot="footer" class="dialog-footer">
+        <el-button @click="PowerdialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="Porersubmit">确 定</el-button>
+      </span>
+       </el-dialog>
   </div>
 </template>
 <script>
@@ -107,6 +133,7 @@ export default {
       role: '',
       user: '',
       dialogVisible: false, // dialog显示
+      PowerdialogVisible: false,
       rules: { // 表单验证
         name: [
           { required: true, message: '请输入角色名称', trigger: 'blur' }
@@ -118,7 +145,9 @@ export default {
       },
       Rowthis: {}, // 当前角色数据
       Isedit: false, // 是否编辑
-      TableSelect: []
+      TableSelect: [],
+      Treedata: [],
+      checkedTree: []
     }
   },
   mounted  () {
@@ -145,9 +174,14 @@ export default {
     },
     // 删除
     AppDelete (index, row) {
-      this.Rowthis = row
-      console.log(row)
-      this.dalete([this.Rowthis])
+      this.$confirm('此操作将删除所选内容, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.Rowthis = row
+        this.dalete([this.Rowthis])
+      }).catch(() => {})
     },
     Bardelete () {
       if (this.TableSelect.length > 0) {
@@ -169,9 +203,6 @@ export default {
     },
     BarEdit () {
       if (this.TableSelect.length === 1) {
-        // this.Rowthis = this.TableSelect[0]
-        // this.ruleForm.name = this.TableSelect[0].name
-        // this.ruleForm.explain = this.TableSelect[0].explain
         this.AppEdit(null, this.TableSelect[0])
         this.dialogVisible = true
         this.Isedit = true
@@ -186,6 +217,7 @@ export default {
     },
     SelectedChange (selection) {
       this.TableSelect = selection
+      console.log(selection)
     },
     // 分页页面大小更改
     SizeChange (size) {
@@ -275,7 +307,89 @@ export default {
           type: data.state === 200 ? 'success' : 'error'
         })
       }, data, error => { console.log(error) })
+    },
+    Power () {
+      if (this.TableSelect.length !== 1) {
+        this.$notify({
+          title: '提示',
+          message: '请选中一行后再操作',
+          duration: 2000,
+          type: 'error'
+        })
+        return
+      }
+      api.Query(api.apiUrl.MenusPower, Menusdata => {
+        api.Query(api.apiUrl.MenusUserPower, data => {
+          this.PowerdialogVisible = true
+          this.checkedTree = data.data
+          let TreeData = Menusdata.data
+          this.Eachchecked(TreeData)
+          this.Treedata = TreeData
+        }, { role: this.TableSelect[0].name }, error => { console.log(error) })
+      }, null, error => { console.log(error) })
+    },
+    Eachchecked (data) {
+      if (data != null && data.length > 0) {
+        data.forEach(p => {
+          if (p.submenu.length > 0) {
+            p.submenu.forEach(d => {
+              if (d.submenuApi != null && d.submenuApi.length > 0) {
+                d.submenuApi.forEach(x => {
+                  if (this.checkedTree.filter(m => m === x.id).length > 0) {
+                    x.checked = true
+                  }
+                })
+              }
+              this.Eachchecked(p)
+            })
+          }
+          if (p.submenuApi != null && p.submenuApi.length > 0) {
+            p.submenuApi.forEach(x => {
+              if (this.checkedTree.filter(m => m === x.id).length > 0) {
+                x.checked = true
+              }
+            })
+          }
+        })
+      }
+    },
+    Porersubmit () {
+      if (this.TableSelect.length !== 1) {
+        this.$notify({
+          title: '提示',
+          message: '请选中一行后再操作',
+          duration: 2000,
+          type: 'error'
+        })
+        return
+      }
+      api.add(api.apiUrl.SaveRolePower, data => {
+        this.$notify({
+          title: '提示',
+          message: data.state === 200 ? '操作成功' : '操作失败',
+          duration: 2000,
+          type: data.state === 200 ? 'success' : 'error'
+        })
+        this.PowerdialogVisible = false
+      }, { MenuViewList: this.$refs.tree.getCheckedNodes(), powerGroup: this.TableSelect[0], UserPower: this.checkedTree }, error => { console.log(error) })
+    },
+    EachcheckedApi (data) {
+
     }
   }
 }
 </script>
+<style scoped>
+.Powertree{
+  width: 100%;
+  height: 500px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.treeNode{
+  float: right;
+}
+.custom-tree-node{
+  width: 100%;
+}
+</style>

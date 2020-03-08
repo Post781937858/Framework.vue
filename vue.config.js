@@ -1,3 +1,8 @@
+
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const productionGzipExtensions = ['js', 'css']
+// const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = false
 module.exports = {
 // 基本路径
   publicPath: '/',
@@ -5,8 +10,23 @@ module.exports = {
   outputDir: 'dist',
   // eslint-loader 是否在保存的时候检查
   lintOnSave: true,
-  configureWebpack: {
-    devtool: 'source-map'
+  runtimeCompiler: true, // 关键点在这
+  configureWebpack: config => {
+    if (isProduction) {
+      config.externals = {
+        'vue': 'Vue',
+        'emlenent-ui': 'ELENENT',
+        'vue-router': 'VueRouter',
+        'vuex': 'Vuex',
+        'echarts': 'echarts'
+      }
+      config.plugins.push(new CompressionWebpackPlugin({
+        algorithm: 'gzip',
+        test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+        threshold: 10240,
+        minRatio: 0.8
+      }))
+    }
   },
   // webpack配置
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md

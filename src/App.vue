@@ -329,6 +329,9 @@ ul.el-menu--popup{
   line-height: 35px !important;
   font-size: 15px !important;
 }
+.el-cascader {
+    width: 100%  !important;
+}
 /* 手机样式 */
  @media all and (max-width: 768px) {
 .el-form--inline .el-form-item {
@@ -408,6 +411,9 @@ display: none;
 }
 .Login-content{
   width: 93% !important;
+}
+.treeNode{
+  display: none;
 }
 }
 </style>
