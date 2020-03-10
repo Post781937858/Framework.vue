@@ -488,4 +488,32 @@ width: 40%;
 .main-content-collapse{
   margin-left:64px  !important;
 }
+.statetag{
+  display: inline-block !important;
+    font-size: 75% !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    text-align: center !important;
+    width: 65px !important;
+    border-radius: 0.25em !important;
+   height: 23px !important;
+    line-height: 23px !important;
+    border-radius: 3px !important;
+}
+.tag-succeed{
+  background: #2D8CF0 !important;
+}
+.tag-error{
+  background:#2F4056!important
+}
+
+.el-steps--simple {
+    padding: 8px 8% !important;
+}
+.el-step__title{
+   font-size: 15px !important;
+}
+.el-step.is-simple .el-step__head {
+    padding-top: 10px !important;
+}
 </style>

@@ -22,6 +22,10 @@ const _apiUrl = {
 
   User: '/api/User',
 
+  operatingLog: '/api/operatingLog',
+
+  CodeCreate: '/api/CodeCreate',
+
   UserImg: '/images/uploader/UserIcon/',
 
   UserImgupload: '/api/User/Icon'
@@ -37,10 +41,8 @@ axios.interceptors.request.use((request) => {
   request.headers.Authorization = 'Bearer ' + localStorage.getItem('Authorization')
   return request
 }, function (error) {
-  Vue.prototype.$message({
-    message: '请求异常',
-    type: 'error'
-  })
+  let message = '请求异常'
+  messageBox(message, false)
   return Promise.reject(error)
 })
 // 请求返回拦截，把数据返回到页面之前做些什么...
@@ -48,7 +50,6 @@ axios.interceptors.response.use((response) => {
   return response
 }, function (error) {
   let message = '请求异常'
-  console.log(error)
   if (error.response) {
     switch (error.response.status) {
       case 500:
@@ -64,10 +65,7 @@ axios.interceptors.response.use((response) => {
   } else {
     message = error
   }
-  Vue.prototype.$message({
-    message: message,
-    type: 'error'
-  })
+  messageBox(message, false)
   return Promise.reject(error)
 })
 
@@ -126,6 +124,72 @@ api.GetImg = (filename) => {
 
 api.UserUpload = () => {
   return `${base}${_apiUrl.UserImgupload}`
+}
+
+let messageBoxnotify = function (msg, state = true) {
+  Vue.prototype.$notify({
+    title: '提示',
+    message: msg,
+    duration: 2000,
+    type: !state ? 'error' : 'success'
+  })
+}
+let messageBox = function (msg, state = true) {
+  Vue.prototype.$message({
+    message: msg,
+    type: !state ? 'error' : 'success'
+  })
+}
+// const Qs = require('qs')
+
+api.getPage = (url, parameters, succeed, error) => {
+  return axios.get(`${base}${url}?Pageindex=${parameters.page.Pageindex}&PageSize=${parameters.page.PageSize}`, { params: parameters.data })
+    .then(res => res.data)
+    .then(data => { succeed(data) }).catch(_error => {
+      messageBoxnotify(_error, false)
+      error(_error)
+    })
+}
+api.get = (url, parameters, succeed, error) => {
+  return axios.get(`${base}${url}`, { params: parameters })
+    .then(res => res.data)
+    .then(data => { succeed(data) }).catch(_error => { error(_error) })
+}
+
+api.put = (url, parameters, succeed, error) => {
+  return axios.put(`${base}${url}`, parameters)
+    .then(res => res.data)
+    .then(data => {
+      messageBoxnotify(data.msg, data.state === 200)
+      succeed(data)
+    }).catch(_error => {
+      messageBoxnotify(_error, false)
+      error(_error)
+    })
+}
+
+api.deletes = (url, parameters, succeed, error) => {
+  return axios.delete(`${base}${url}`, { data: parameters })
+    .then(res => res.data)
+    .then(data => {
+      messageBoxnotify(data.msg, data.state === 200)
+      succeed(data)
+    }).catch(_error => {
+      messageBoxnotify(_error, false)
+      error(_error)
+    })
+}
+
+api.post = (url, parameters, succeed, error) => {
+  return axios.post(`${base}${url}`, parameters)
+    .then(res => res.data)
+    .then(data => {
+      messageBoxnotify(data.msg, data.state === 200)
+      succeed(data)
+    }).catch(_error => {
+      messageBoxnotify(_error, false)
+      error(_error)
+    })
 }
 
 export default api

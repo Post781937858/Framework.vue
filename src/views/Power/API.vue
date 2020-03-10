@@ -48,7 +48,7 @@
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="white"
-        :default-sort = "{prop: 'date', order: 'descending'}">
+        >
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
             <el-table-column prop="title" label="名称" align="center"></el-table-column>
             <el-table-column prop="icon" label="图标" align="center"></el-table-column>
@@ -115,21 +115,11 @@
       </el-form-item>
      <el-form-item label="类型" prop='menutype'>
       <el-select placeholder="请选择"  v-model="ruleForm.menutype">
-         <!-- <el-option label="全部" :value="0"></el-option> -->
          <el-option label="菜单" :value="0"></el-option>
          <el-option label="按钮" :value="1"></el-option>
          <el-option label="接口" :value="2" ></el-option>
       </el-select>
       </el-form-item>
-      <!-- <el-form-item label="父级" prop='menuid'>
-      <el-select placeholder="请选择"  v-model="ruleForm.menuid">
-      <el-option label="无" :value="999"></el-option>
-      <el-option v-for="items in roleoptions"
-      :key="items.value"
-      :label="items.label"
-      :value="items.value" ></el-option>
-      </el-select>
-      </el-form-item> -->
       <el-form-item label="排序" prop='no'>
         <el-input placeholder="排序" v-model="ruleForm.no"></el-input>
       </el-form-item>
@@ -159,7 +149,7 @@ export default {
       }
     }
     return {
-      loading: false, // loading加载
+      loading: true, // loading加载
       RoletableData: [],
       QueryForm: {
         title: '',
@@ -199,7 +189,6 @@ export default {
       Rowthis: {}, // 当前角色数据
       Isedit: false, // 是否编辑
       TableSelect: [],
-      roleoptions: [],
       cascaderoptions: []
     }
   },
@@ -231,7 +220,6 @@ export default {
       this.ruleForm.url = row.url
       this.ruleForm.state = row.state
       this.ruleForm.menutype = row.menutype
-      console.log(row.menutype)
       this.ruleForm.menuid = row.menuid
       this.ruleForm.explain = row.explain
       this.ruleForm.no = row.no
@@ -331,24 +319,18 @@ export default {
         }
       })
     },
-    // 查询角色
+    // 查询
     QueryData () {
       this.loading = true
       api.Query(api.apiUrl.MenusAll, data => {
         this.loading = false
         this.RoletableData = data.data
-        this.roleoptions = []
-        data.data.forEach(p => {
-          if (p.menutype === 0) {
-            this.roleoptions.push({ value: p.id, label: p.title })
-          }
-        })
       }, this.QueryForm, error => { this.loading = false; console.error(error) })
       api.Query(api.apiUrl.MenusPower, data => {
         this.cascaderoptions = data.data
       }, this.QueryForm, error => { this.loading = false; console.error(error) })
     },
-    // 添加角色
+    // 添加
     Add () {
       this.ruleForm.no = parseInt(this.ruleForm.no)
       this.ruleForm.menuid = parseInt(this.ruleForm.menuid == null ? 0 : this.ruleForm.menuid)
@@ -365,7 +347,7 @@ export default {
         console.error(error)
       })
     },
-    // 更新角色
+    // 更新
     update () {
       let CheckedNodes = this.$refs.cascader.getCheckedNodes()
       if (CheckedNodes.length > 0) {
@@ -394,7 +376,7 @@ export default {
         this.dialogVisible = false
       })
     },
-    // 删除角色
+    // 删除
     dalete (data) {
       api.delete(api.apiUrl.Menus, data => {
         this.QueryData()
@@ -409,28 +391,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.statetag{
-  display: inline-block !important;
-    font-size: 75% !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    text-align: center !important;
-    width: 65px !important;
-    border-radius: 0.25em !important;
-   height: 23px !important;
-    line-height: 23px !important;
-    border-radius: 3px !important;
-}
-.tag-succeed{
-  background: #2D8CF0 !important;
-}
-.tag-error{
-  background:#2F4056!important
-}
-.userImg{
-  width:30px;
-  height: 30px;
-  border-radius: 50%;
-}
-</style>

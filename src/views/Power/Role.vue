@@ -35,7 +35,7 @@
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="white"
-        :default-sort = "{prop: 'date', order: 'descending'}">
+        >
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
             <el-table-column prop="name" label="角色名称"  align="center"></el-table-column>
             <el-table-column prop="explain" label="角色描述" align="center" ></el-table-column>
@@ -125,7 +125,7 @@ export default {
   data () {
     return {
       RoletableData: [],
-      loading: false, // loading加载
+      loading: true, // loading加载
       IshidePage: false, // 是否隐藏分页
       PageCount: 0, // 总条数
       PageIndex: 1, // 当页

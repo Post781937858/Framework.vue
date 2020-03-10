@@ -53,7 +53,7 @@
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="white"
-        :default-sort = "{prop: 'date', order: 'descending'}">
+       >
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
             <el-table-column prop="userNumber" label="账号" align="center"></el-table-column>
             <el-table-column prop="showName" label="显示名称" align="center"></el-table-column>
@@ -64,11 +64,11 @@
                 <el-tag class="statetag " :class="scope.row.userState === 200 ?'tag-succeed':'tag-error'" disable-transitions>{{scope.row.userState === 200 ? '正常' : '锁定'}}</el-tag>
               </template>
              </el-table-column>
-              <el-table-column prop="Imgurl" label="图像" align="center">
+              <!-- <el-table-column prop="Imgurl" label="图像" align="center">
                 <template slot-scope="scope" >
                   <img class="userImg" :src='GetImg(scope.row.imgurl)'>
                 </template>
-              </el-table-column>
+              </el-table-column> -->
             <el-table-column prop="createTime" label="创建时间" align="center"></el-table-column>
       <el-table-column label="操作" width="180"  align="center" >
         <template slot-scope="scope" >
@@ -80,18 +80,9 @@
     </el-table-column>
         </el-table>
         <div class="app-pagination">
-    <el-pagination
-        background
-        :hide-on-single-page='IshidePage'
-        :current-page="PageIndex"
-        :page-sizes="[10,30, 50, 90]"
-        @size-change='SizeChange'
-        @current-change='CurrentChange'
-       layout="prev, pager, next"
-        :total="PageCount">
-    </el-pagination>
+         <elPagination :url='url' ref="Page" :parameter='QueryForm'  v-on:get="(data) => { RoletableData = data }"  v-on:loading='(isloading) => { loading = isloading }' ></elPagination>
         </div>
-          </div>
+       </div>
       </div>
     </div>
     <el-dialog
@@ -153,7 +144,9 @@
 </template>
 <script>
 import api from '@/api/api'
+import elPagination from '@/components/Pagination'
 export default {
+  components: { elPagination },
   data () {
     var validatePass = (rule, value, callback) => {
       if (value === '') {
@@ -175,12 +168,9 @@ export default {
       }
     }
     return {
+      url: api.apiUrl.User,
       RoletableData: [],
-      loading: false, // loading加载
-      IshidePage: false, // 是否隐藏分页
-      PageCount: 0, // 分页条数
-      PageIndex: 1, // 当页
-      PageSize: 10, // 页面大小
+      loading: true, // loading加载
       QueryForm: {
         userNumber: '',
         powerName: '',
@@ -221,7 +211,6 @@ export default {
     }
   },
   created  () {
-    this.QueryData()
     this.QueryRole()
   },
   methods: {
@@ -251,7 +240,7 @@ export default {
     },
     // 查询
     Query () {
-      this.QueryData()
+      this.$refs.Page.refresh()
     },
     // 编辑
     AppEdit (index, row) {
@@ -319,20 +308,10 @@ export default {
     SelectedChange (selection) {
       this.TableSelect = selection
     },
-    // 分页页面大小更改
-    SizeChange (size) {
-      this.PageSize = size
-      this.QueryData()
-    },
-    // PageIndex更改
-    CurrentChange (index) {
-      this.PageIndex = index
-      this.QueryData()
-    },
     // 重置
     reset () {
       this.$refs.QueryForm.resetFields()
-      this.QueryData()
+      this.$refs.Page.refresh()
     },
     // 清除dialog表单
     resetdialog () {
@@ -365,23 +344,6 @@ export default {
         })
       }, {}, error => { console.error(error) })
     },
-    // 查询角色
-    QueryData () {
-      this.loading = true
-      api.Query(api.apiUrl.User, data => {
-        this.IshidePage = false
-        this.RoletableData = data.data.data
-        this.PageCount = data.data.dataCount
-        this.loading = false
-        if (this.PageCount === 0) this.IshidePage = true
-      }, {
-        Pageindex: this.PageIndex,
-        PageSize: this.PageSize,
-        userNumber: this.QueryForm.userNumber,
-        powerName: this.QueryForm.powerName,
-        userState: this.QueryForm.userState
-      }, error => { this.IshidePage = true; this.loading = false; console.error(error) })
-    },
     // 添加角色
     Add () {
       if (this.fileList.length === 0) {
@@ -395,18 +357,8 @@ export default {
       }
       this.ruleForm.userState = parseInt(this.ruleForm.userState)
       this.ruleForm.imgurl = this.fileList[0].name
-      api.add(api.apiUrl.User, data => {
-        this.QueryData()
-        this.$notify({
-          title: '提示',
-          message: data.state === 200 ? '操作成功' : '操作失败',
-          duration: 2000,
-          type: data.state === 200 ? 'success' : 'error'
-        })
-        this.dialogVisible = false
-      }, this.ruleForm, error => {
-        console.error(error)
-      })
+      this.$refs.Page.add(JSON.parse(JSON.stringify(this.ruleForm)))
+      this.dialogVisible = false
     },
     // 更新角色
     update () {
@@ -416,53 +368,17 @@ export default {
       this.Rowthis.userState = this.ruleForm.userState
       this.Rowthis.powerName = this.ruleForm.powerName
       this.Rowthis.imgurl = this.fileList[0].name
-      api.update(api.apiUrl.User, data => {
-        this.QueryData()
-        this.$notify({
-          title: '提示',
-          message: data.state === 200 ? '操作成功' : '操作失败',
-          duration: 2000,
-          type: data.state === 200 ? 'success' : 'error'
-        })
-      }, this.Rowthis, error => {
-        console.error(error)
-      })
+      this.$refs.Page.edit(this.Rowthis)
       this.dialogVisible = false
     },
     // 删除角色
     dalete (data) {
-      api.delete(api.apiUrl.User, data => {
-        this.QueryData()
-        this.$notify({
-          title: '提示',
-          message: data.state === 200 ? '操作成功' : '操作失败',
-          duration: 2000,
-          type: data.state === 200 ? 'success' : 'error'
-        })
-      }, data, error => { console.log(error) })
+      this.$refs.Page.dalete(data)
     }
   }
 }
 </script>
-<style scoped>
-.statetag{
-  display: inline-block !important;
-    font-size: 75% !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    text-align: center !important;
-    width: 65px !important;
-    border-radius: 0.25em !important;
-   height: 23px !important;
-    line-height: 23px !important;
-    border-radius: 3px !important;
-}
-.tag-succeed{
-  background: #2D8CF0 !important;
-}
-.tag-error{
-  background:#2F4056!important
-}
+<style >
 .userImg{
   width:30px;
   height: 30px;
