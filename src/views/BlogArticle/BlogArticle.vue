@@ -4,11 +4,11 @@
        <div class="app-Tag-row app-Tag-row-panel">
        <div class="app-form">
     <el-form :inline="true"  class="demo-form-inline" ref="QueryForm" :model="QueryForm">
-      <el-form-item label="用户名称" prop='UserName'>
-        <el-input placeholder="用户名称" v-model="QueryForm.UserName"></el-input>
+      <el-form-item label="标题" prop='btitle'>
+        <el-input placeholder="标题" v-model="QueryForm.btitle"></el-input>
       </el-form-item>
-      <el-form-item label="异常信息" prop='errormsg'>
-        <el-input placeholder="异常信息" v-model="QueryForm.errormsg"></el-input>
+      <el-form-item label="创建人" prop='bsubmitter'>
+        <el-input placeholder="创建人" v-model="QueryForm.bsubmitter"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary"  @click="Query">查询</el-button>
@@ -36,12 +36,18 @@
         element-loading-background="white"
        >
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
-            <el-table-column prop="time" label="异常时间" align="center"></el-table-column>
-            <el-table-column prop="userId" label="用户id" align="center"></el-table-column>
-            <el-table-column prop="userName" label="用户名称" align="center"></el-table-column>
-            <el-table-column prop="url" label="url" align="center"></el-table-column>
-            <el-table-column prop="errormsg" label="异常信息" align="center"></el-table-column>
-            <el-table-column prop="errorstack" label="堆栈" align="center"></el-table-column>
+            <el-table-column prop="bsubmitter" label="创建人" align="center"></el-table-column>
+            <el-table-column prop="btitle" label="标题" align="center"></el-table-column>
+            <el-table-column prop="bcsynopsis" label="简介" align="center"></el-table-column>
+            <el-table-column prop="bcategory" label="类别" align="center"></el-table-column>
+            <el-table-column prop="bcontent" label="内容" align="center"></el-table-column>
+            <el-table-column prop="bcimgsrc" label="图片路径" align="center"></el-table-column>
+            <el-table-column prop="btraffic" label="访问量" align="center"></el-table-column>
+            <el-table-column prop="bcommentNum" label="评论数量" align="center"></el-table-column>
+            <el-table-column prop="bUpdateTime" label="修改时间" align="center"></el-table-column>
+            <el-table-column prop="bCreateTime" label="创建时间" align="center"></el-table-column>
+            <el-table-column prop="bRemark" label="备注" align="center"></el-table-column>
+            <el-table-column prop="isDeleted" label="逻辑删除" align="center"></el-table-column>
       <el-table-column label="操作" width="180"  align="center" >
         <template slot-scope="scope" >
           <div><a  @click="AppEdit(scope.$index, scope.row)">编辑</a>
@@ -64,23 +70,41 @@
       :visible.sync="dialogVisible"
       width="27%">
       <el-form :model="ruleForm" label-position="top" label-width="80px" :rules="rules" ref='ruleForm'>
-      <el-form-item label="异常时间" prop='time'>
-        <el-input  v-model="ruleForm.time"></el-input>
+      <el-form-item label="创建人" prop='bsubmitter'>
+        <el-input  v-model="ruleForm.bsubmitter"></el-input>
       </el-form-item>
-      <el-form-item label="用户id" prop='userId'>
-        <el-input  v-model.number="ruleForm.userId"></el-input>
+      <el-form-item label="标题" prop='btitle'>
+        <el-input  v-model="ruleForm.btitle"></el-input>
       </el-form-item>
-      <el-form-item label="用户名称" prop='userName'>
-        <el-input  v-model="ruleForm.userName"></el-input>
+      <el-form-item label="简介" prop='bcsynopsis'>
+        <el-input  v-model="ruleForm.bcsynopsis"></el-input>
       </el-form-item>
-      <el-form-item label="url" prop='url'>
-        <el-input  v-model="ruleForm.url"></el-input>
+      <el-form-item label="类别" prop='bcategory'>
+        <el-input  v-model="ruleForm.bcategory"></el-input>
       </el-form-item>
-      <el-form-item label="异常信息" prop='errormsg'>
-        <el-input  v-model="ruleForm.errormsg"></el-input>
+      <el-form-item label="内容" prop='bcontent'>
+        <el-input  v-model="ruleForm.bcontent"></el-input>
       </el-form-item>
-      <el-form-item label="堆栈" prop='errorstack'>
-        <el-input  v-model="ruleForm.errorstack"></el-input>
+      <el-form-item label="图片路径" prop='bcimgsrc'>
+        <el-input  v-model="ruleForm.bcimgsrc"></el-input>
+      </el-form-item>
+      <el-form-item label="访问量" prop='btraffic'>
+        <el-input  v-model.number="ruleForm.btraffic"></el-input>
+      </el-form-item>
+      <el-form-item label="评论数量" prop='bcommentNum'>
+        <el-input  v-model.number="ruleForm.bcommentNum"></el-input>
+      </el-form-item>
+      <el-form-item label="修改时间" prop='bUpdateTime'>
+        <el-input  v-model="ruleForm.bUpdateTime"></el-input>
+      </el-form-item>
+      <el-form-item label="创建时间" prop='bCreateTime'>
+        <el-input  v-model="ruleForm.bCreateTime"></el-input>
+      </el-form-item>
+      <el-form-item label="备注" prop='bRemark'>
+        <el-input  v-model="ruleForm.bRemark"></el-input>
+      </el-form-item>
+      <el-form-item label="逻辑删除" prop='isDeleted'>
+        <el-input  v-model="ruleForm.isDeleted"></el-input>
       </el-form-item>
     </el-form>
       <span slot="footer" class="dialog-footer">
@@ -97,12 +121,11 @@ export default {
   components: { elPagination },
   data () {
     return {
-      url: '/api/ErrorLog',
+      url: '/api/BlogArticle',
       RoletableData: [],
       loading: true, // loading加载
-      QueryForm: {
-        UserName: '',
-        errormsg: ''
+      QueryForm: { btitle: '',
+        bsubmitter: ''
       },
       dialogVisible: false, // dialog显示
       rules: { // 表单验证
