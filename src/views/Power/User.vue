@@ -344,7 +344,7 @@ export default {
         })
       }, {}, error => { console.error(error) })
     },
-    // 添加角色
+    // 添加
     Add () {
       if (this.fileList.length === 0) {
         this.$notify({
@@ -360,7 +360,7 @@ export default {
       this.$refs.Page.add(JSON.parse(JSON.stringify(this.ruleForm)))
       this.dialogVisible = false
     },
-    // 更新角色
+    // 更新
     update () {
       this.Rowthis.password = this.ruleForm.password
       this.Rowthis.showName = this.ruleForm.showName
@@ -371,7 +371,7 @@ export default {
       this.$refs.Page.edit(this.Rowthis)
       this.dialogVisible = false
     },
-    // 删除角色
+    // 删除
     dalete (data) {
       this.$refs.Page.dalete(data)
     }

@@ -26,10 +26,11 @@ const _apiUrl = {
 
   CodeCreate: '/api/CodeCreate',
 
+  GetTemplateConfig: '/api/CodeCreate/GetTemplateConfig',
+
   UserImg: '/images/uploader/UserIcon/',
 
   UserImgupload: '/api/User/Icon'
-
 }
 
 let base = ''

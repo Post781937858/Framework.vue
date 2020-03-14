@@ -3,7 +3,7 @@
    <div class="main-left" ref="Navleft">
        <div class="main-left-logo">
          <span class="logo-menu" v-show="tltle_icon"><i  class="fa fa-laptop fa-ls"></i></span>
-         <span class="title-menu" v-show="tltle_text">Blog后台管理系统</span>
+         <span class="title-menu" v-show="tltle_text">Framework.Core</span>
        </div>
        <div class="main-left-menu">
          <el-scrollbar style="height:100%;">
