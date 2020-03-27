@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Vue from 'vue'
+import router from '@/router'
 const _apiUrl = {
 
   Login: '/api/Login',
@@ -30,7 +31,11 @@ const _apiUrl = {
 
   UserImg: '/images/uploader/UserIcon/',
 
-  UserImgupload: '/api/User/Icon'
+  UserImgupload: '/api/User/Icon',
+
+  getUser: '/api/User/GetUser',
+
+  userSetting: '/api/User/userSetting'
 }
 
 let base = ''
@@ -57,12 +62,13 @@ axios.interceptors.response.use((response) => {
         message = '服务器错误'
         break
       case 401:
-        message = '很抱歉，您没有此操作的权限'
+        message = '无权访问该接口，请确保已经登录'
         break
       case 403:
-        message = '您的权限等级不够，请联系管理员'
+        message = '您没有此操作的权限，请联系管理员'
         break
     }
+    if (error.response.status === 401) { router.resetRouter(); localStorage.clear(); router.push({ name: 'Login' }) }
   } else {
     message = error
   }
@@ -147,7 +153,7 @@ api.getPage = (url, parameters, succeed, error) => {
   return axios.get(`${base}${url}?Pageindex=${parameters.page.Pageindex}&PageSize=${parameters.page.PageSize}`, { params: parameters.data })
     .then(res => res.data)
     .then(data => { succeed(data) }).catch(_error => {
-      messageBoxnotify(_error, false)
+      // messageBoxnotify(_error, false)
       error(_error)
     })
 }
@@ -164,7 +170,7 @@ api.put = (url, parameters, succeed, error) => {
       messageBoxnotify(data.msg, data.state === 200)
       succeed(data)
     }).catch(_error => {
-      messageBoxnotify(_error, false)
+      console.error(_error)
       error(_error)
     })
 }
@@ -176,7 +182,8 @@ api.deletes = (url, parameters, succeed, error) => {
       messageBoxnotify(data.msg, data.state === 200)
       succeed(data)
     }).catch(_error => {
-      messageBoxnotify(_error, false)
+      // messageBoxnotify(_error, false)
+      console.error(_error)
       error(_error)
     })
 }
@@ -188,7 +195,8 @@ api.post = (url, parameters, succeed, error) => {
       messageBoxnotify(data.msg, data.state === 200)
       succeed(data)
     }).catch(_error => {
-      messageBoxnotify(_error, false)
+      // messageBoxnotify(_error, false)
+      console.error(_error)
       error(_error)
     })
 }

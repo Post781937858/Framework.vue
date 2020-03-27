@@ -6,7 +6,7 @@
          <span class="title-menu" v-show="tltle_text">Framework.Core</span>
        </div>
        <div class="main-left-menu">
-         <el-scrollbar style="height:100%;">
+         <el-scrollbar class="left-scrollbar">
          <el-menu  class="el-menu-vertical-demo" :router="true" :default-active="$route.path" @select='NavMenuselect'
                 background-color="#191a23"
                 style="transition: all 0s"
@@ -47,10 +47,10 @@
       </ul>
        </div>
      <div class="dropdown-menu-item" style=" padding-right: 10px;">
-               <img :src='require("../assets/user.svg")' class="user-img">
+               <img :src='GetImg(user.imgurl)' class="user-img">
         <el-dropdown @command="handleCommand" >
        <span class="el-dropdown-link" style="cursor:pointer;margin:0px 8px;">
-        贤心<i class="el-icon-arrow-down el-icon--right lg"></i>
+        {{user.name}}<i class="el-icon-arrow-down el-icon--right lg"></i>
         </span>
           <el-dropdown-menu slot="dropdown" >
             <el-dropdown-item command="1">基本资料</el-dropdown-item>
@@ -107,7 +107,10 @@
    </div>
    <div class="main-content" ref="NavMain">
      <!-- <el-scrollbar style="height:100%;"> -->
-      <router-view></router-view>
+       <!-- <keep-alive>
+
+      </keep-alive> -->
+       <router-view></router-view>
      <!-- </el-scrollbar> -->
    </div>
   </div>
@@ -116,6 +119,7 @@
 import ScrollPane from '@/components/ScrollPane'
 import Menubar from '@/components/Menubar'
 import router from '@/router'
+import api from '@/api/api'
 export default {
   components: { Menubar, ScrollPane },
   data () {
@@ -125,7 +129,11 @@ export default {
       tltle_text: true,
       tltle_icon: false,
       isCollapse: false,
-      routes: []
+      routes: [],
+      user: {
+        name: '',
+        imgurl: ''
+      }
     }
   },
   created () {
@@ -134,6 +142,9 @@ export default {
     this.NavMenuselect(this.$route.path, null)
   },
   mounted () {
+    let cacheuser = JSON.parse(localStorage.getItem('user'))
+    this.user.imgurl = cacheuser.imgurl
+    this.user.name = cacheuser.showName
     document.body.addEventListener('touchstart', function () { })
     window.onresize = () => {
       return (() => {
@@ -145,6 +156,9 @@ export default {
     this.init(that.screenWidth)
   },
   methods: {
+    GetImg (filename) {
+      return api.GetImg(filename)
+    },
     NavMenuselect (index, indexPath) {
       let item = JSON.parse(localStorage.getItem('Usermenus')).filter(p => p.path === index)
       if (item.length > 0) {
@@ -196,7 +210,12 @@ export default {
     },
     handleCommand (command) {
       switch (parseInt(command)) {
-        case 1: break
+        case 1:
+          if (this.$route.name !== '个人中心') {
+            this.$router.push({ name: '个人中心' })
+            this.NavMenuselect(this.$route.path, null)
+          }
+          break
         case 2: break
         case 3:this.exit(); break
       }
@@ -212,6 +231,14 @@ export default {
       } else if (Width > 700 && this.isCollapse) {
         // this.OnCollapse()
       }
+    },
+    update (name, imgurl) {
+      let cacheuser = JSON.parse(localStorage.getItem('user'))
+      cacheuser.showName = name
+      cacheuser.imgurl = imgurl
+      localStorage.setItem('user', JSON.stringify(cacheuser))
+      this.user.name = name
+      this.user.imgurl = imgurl
     }
   },
   watch: {
@@ -240,7 +267,7 @@ export default {
     position: fixed;
     left: 0px;
     top: 0px;
-    width: 256px;
+    width: 220px;
     height: 100%;
     background-color: #191a23;
     overflow: hidden;
@@ -252,14 +279,14 @@ export default {
     left: 0px;
     top: 0px;
      right: 0px;
-     margin-left: 256px;
+     margin-left: 220px;
     /* height: 88px; */
     box-shadow: 0 1px 2px 0 rgba(0,0,0,.1);
     transition: all 0.2s linear;
 }
 .main-top-content{
     background: white;
-    padding-right:  256px;
+    padding-right:  220px;
     border-top: 1px solid rgb(117, 102, 102);
 }
 .main-content{
@@ -268,7 +295,7 @@ export default {
     top: 0px;
     bottom: 0px;
     right: 0px;
-    margin-left:  256px;
+    margin-left:  220px;
     margin-top: 94px;
     overflow: auto;
     transition: all 0.2s linear;
@@ -278,7 +305,7 @@ export default {
 .main-content-Body{
      height: 100%;
      background: #f5f7f9 !important;
-     padding-right:  256px;
+     padding-right:  220px;
      padding-bottom:88px;
 }
 .main-left-logo{
@@ -506,7 +533,9 @@ width: 40%;
 .tag-error{
   background:#2F4056!important
 }
-
+.tag-warn{
+  background:#909399!important
+}
 .el-steps--simple {
     padding: 8px 8% !important;
 }
@@ -515,5 +544,12 @@ width: 40%;
 }
 .el-step.is-simple .el-step__head {
     padding-top: 10px !important;
+}
+.left-scrollbar{
+  position: absolute!important;
+  top: 51px!important;
+  left: 0px!important;
+  bottom: 0px!important;
+   right:  0px!important;
 }
 </style>

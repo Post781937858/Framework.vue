@@ -29,10 +29,10 @@
          <el-option label="锁定" :value="500" ></el-option>
       </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary"  @click="Query"  >查询</el-button>
+       <el-form-item class="btnQuery">
+        <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
@@ -56,7 +56,7 @@
        >
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
             <el-table-column prop="userNumber" label="账号" align="center"></el-table-column>
-            <el-table-column prop="showName" label="显示名称" align="center"></el-table-column>
+            <el-table-column prop="showName" label="昵称" align="center"></el-table-column>
             <el-table-column prop="powerName" label="角色" align="center"></el-table-column>
             <el-table-column prop="remark" label="描述" align="center"></el-table-column>
             <el-table-column prop="userState" label="状态"   align="center">
@@ -91,7 +91,7 @@
       :append-to-body='true'
       :visible.sync="dialogVisible"
       width="27%">
-      <el-form :model="ruleForm" label-position="top" label-width="80px" :rules="rules" ref='ruleForm' >
+      <el-form :model="ruleForm"  label-position="top" label-width="80px" :rules="rules" ref='ruleForm' >
       <el-form-item label="账号" prop='userNumber'>
         <el-input  v-model="ruleForm.userNumber"></el-input>
       </el-form-item>
@@ -101,7 +101,7 @@
        <el-form-item label="再次输入密码" prop='checkpassword'>
         <el-input type="password"  v-model="ruleForm.checkpassword"></el-input>
       </el-form-item>
-       <el-form-item label="显示名称" prop='showName'>
+       <el-form-item label="昵称" prop='showName'>
         <el-input  v-model="ruleForm.showName"></el-input>
       </el-form-item>
       <el-form-item label="描述" prop='remark'>

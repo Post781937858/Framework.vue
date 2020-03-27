@@ -7,10 +7,10 @@
       <el-form-item label="账号" prop='userNumber'>
         <el-input placeholder="账号" v-model="QueryForm.userNumber"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary"  @click="Query"  >查询</el-button>
+     <el-form-item class="btnQuery">
+        <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>

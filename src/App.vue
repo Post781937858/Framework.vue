@@ -110,6 +110,7 @@ app-card-list {
     position: relative;
     padding: 15px 15px;
     line-height: 25px;
+    overflow: hidden;
 }
 .app-pagination{
     padding-top: 10px;
@@ -271,7 +272,7 @@ a {
     margin-right: 20px !important;
 }
 .el-form-item {
-    margin-bottom: 7px !important;
+    margin-bottom: 13px !important;
 }
 
 .el-dialog__header {
@@ -292,7 +293,8 @@ a {
 }
 .app-home .el-form--label-top .el-form-item__label,.el-dialog__body .el-form--label-top .el-form-item__label{
     padding: 0px !important;
-    height: 30px !important;
+    height: 23px !important;
+    line-height: 23px;
 }
 .el-dialog__title {
     font-size: 16px !important;
@@ -332,8 +334,88 @@ ul.el-menu--popup{
 .el-cascader {
     width: 100%  !important;
 }
+.el-date-editor.el-input, .el-date-editor.el-input__inner {
+    width: 100% !important;
+}
+.el-form--inline .el-form-item__label {
+    min-width:70px !important;
+}
+.el-input--suffix .el-input__inner {
+    padding-right: 15px!important;
+}
+/* .el-dialog .el-input--suffix .el-input__inner,.form-content .el-input--suffix .el-input__inner{
+    width:100% !important;
+} */
+ .el-input__inner {
+    width:100% !important;
+}
+.el-form--label-top .el-input__inner {
+    width:100% !important;
+}
+.el-dialog{
+  position: absolute !important;
+  top: 50%  !important;
+  left: 50%  !important;
+ transform: translate(-50%, -50%) !important;
+ margin-top: 0px !important;
+}
+
+.el-form--inline .el-form-item__content {
+    /* display: block!important; */
+    vertical-align: top !important;
+    /* margin-left: 100px!important; */
+}
+.el-form--inline .el-form-item__label {
+    float: left !important;
+    min-width: 80px !important;
+    display: inline-block !important;
+}
+.el-form--inline .el-form-item {
+    display: inline-block!important;
+    margin-right: 0px!important;
+    vertical-align: top!important;
+}
+.el-input--prefix .el-input__inner{
+  padding-right: 0px !important;
+}
+.col{
+  width: 100%;
+}
+.col-1{
+  width: 50%;
+}
+.col-2{
+  width: 33%;
+}
+.col-3{
+  width: 50%;
+}
+.btnQuery{
+padding-left: 20px;
+}
 /* 手机样式 */
  @media all and (max-width: 768px) {
+.btnQuery{
+padding-left: 0px;
+}
+   .el-form--inline .el-form-item__label {
+    float: none !important;
+    min-width: 80px !important;
+    display: block !important;
+}
+.el-form--inline .el-form-item__content {
+    margin-left:0px!important;
+}
+  .el-dialog{
+  position: relative !important;
+    top: 0px  !important;
+  left: 0px  !important;
+ transform: none !important;
+  margin-top: 10px !important;
+}
+   .el-input--suffix .el-input__inner{
+  width: 100% !important;
+   }
 .el-form--inline .el-form-item {
     width: 100%  !important;
 }
@@ -360,11 +442,11 @@ ul.el-menu--popup{
 }
 .main-top{
   margin-left: 0px !important;
-  transform: translate(256px,0px)
+  transform: translate(220px,0px)
 }
 .main-content{
 margin-left: 0px !important;
- transform: translate(256px,0px)
+ transform: translate(220px,0px)
 }
 ul.head-menu-left li:nth-child(2)
 ,ul.head-menu-left li:nth-child(3){
@@ -375,7 +457,7 @@ display: none;
 }
 .main-left-collapse{
  /* left: 0px !important; */
- transform: translate(-200px,0px)
+ transform: translate(-220px,0px)
 }
 .main-top-collapse{
  /* margin-left:64px  !important; */

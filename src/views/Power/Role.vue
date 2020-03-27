@@ -10,10 +10,10 @@
       <el-form-item label="创建人">
         <el-input placeholder="创建人" v-model="user"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary"  @click="Query"  >查询</el-button>
+     <el-form-item class="btnQuery">
+        <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
@@ -331,7 +331,7 @@ export default {
     Eachchecked (data) {
       if (data != null && data.length > 0) {
         data.forEach(p => {
-          if (p.submenu.length > 0) {
+          if (p.submenu != null && p.submenu.length != null && p.submenu.length > 0) {
             p.submenu.forEach(d => {
               if (d.submenuApi != null && d.submenuApi.length > 0) {
                 d.submenuApi.forEach(x => {

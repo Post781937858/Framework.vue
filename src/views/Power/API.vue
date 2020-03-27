@@ -22,10 +22,10 @@
          <el-option label="接口" :value="2" ></el-option>
       </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary"  @click="Query"  >查询</el-button>
+     <el-form-item class="btnQuery">
+        <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
@@ -83,8 +83,8 @@
       @close="resetdialog"
       :append-to-body='true'
       :visible.sync="dialogVisible"
-      width="27%">
-      <el-form :model="ruleForm" label-position="top" label-width="80px" :rules="rules" ref='ruleForm' >
+      width="1000px">
+      <el-form :model="ruleForm"  class="demo-form-inline" :inline="true" label-width="80px" :rules="rules" ref='ruleForm' >
       <el-form-item label="名称" prop='title'>
         <el-input placeholder="名称" v-model="ruleForm.title"></el-input>
       </el-form-item>

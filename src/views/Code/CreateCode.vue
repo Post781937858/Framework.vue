@@ -4,22 +4,22 @@
        <div class="app-Tag-row app-Tag-row-panel">
        <div class="app-form">
     <el-steps  :active="active" simple>
-    <el-step title="步骤 1-选择模型"  icon="el-icon-edit"></el-step>
-    <el-step title="步骤 2-功能配置" icon="el-icon-upload"></el-step>
-    <el-step title="步骤 3-查看代码" icon="el-icon-picture"></el-step>
-    <el-step title="步骤 4-发布功能" icon="el-icon-picture"></el-step>
+    <el-step title="步骤 1-选择模型"  icon="el-icon-s-promotion"></el-step>
+    <el-step title="步骤 2-功能配置" icon="el-icon-edit"></el-step>
+    <el-step title="步骤 3-查看代码" icon="el-icon-tickets"></el-step>
+    <el-step title="步骤 4-发布功能" icon="el-icon-monitor"></el-step>
     </el-steps>
     </div>
     <div v-show="active==0">
      <div class="app-form">
       <el-form :inline="true"  class="demo-form-inline" ref="QueryForm" :model="QueryForm">
-      <el-form-item label="表名" prop='Name'>
-        <el-input placeholder="表名" v-model="QueryForm.Name"></el-input>
+      <el-form-item label="模型名称" prop='modelName'>
+        <el-input placeholder="模型名称" v-model="QueryForm.modelName"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary"  @click="Query"  >查询</el-button>
+      <el-form-item class="btnQuery">
+        <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
@@ -58,10 +58,10 @@
     </el-tab-pane>
     <el-tab-pane label="配置功能模块" name="second">
       <el-form  label-width="150px" class="demo-ruleForm" :model="TemplateConfig"  style="  margin-top: 20px;">
-      <el-form-item  class="col-umn1" label="开启表格分页" prop="name">
+      <!-- <el-form-item  class="col-umn1" label="开启表格分页" prop="name">
         <el-switch  v-model="TemplateConfig.isPaging"></el-switch>
-    </el-form-item>
-     <el-form-item  class="col-umn1" label="开启表格操作栏" prop="name">
+    </el-form-item> -->
+     <el-form-item  class="col-umn1" label="关闭表格操作栏" prop="name">
         <el-switch v-model="TemplateConfig.tableToolOn"></el-switch>
     </el-form-item>
      <el-form-item  class="col-umn1" label="前端输出目录" prop="vueOutputPath">
@@ -93,7 +93,7 @@
    </el-tabs>
     </div>
    <div class="app-card-body app-card-list "  v-show="active==2">
- <el-tabs v-model="activeName"  tab-position="left">
+   <el-tabs v-model="activeName"  tab-position="left">
     <el-tab-pane label="前端页面" name="first"><div><pre class="code"><code>{{TemplateCode.vueCode}}</code></pre></div></el-tab-pane>
     <el-tab-pane label="实体模型" name="second"><div><pre class="code"><code>{{TemplateCode.modelCode}}</code></pre></div></el-tab-pane>
     <el-tab-pane label="控制器类" name="second1"><div><pre class="code"><code>{{TemplateCode.controllerCode}}</code></pre></div></el-tab-pane>
@@ -102,14 +102,43 @@
     <el-tab-pane label="仓储实现" name="fourth1"><div><pre class="code"><code>{{TemplateCode.repositoryCode}}</code></pre></div></el-tab-pane>
     <el-tab-pane label="服务实现" name="fourth2"><div><pre class="code"><code>{{TemplateCode.servicesCode}}</code></pre></div></el-tab-pane>
   </el-tabs>
+  </div>
+  <div class="app-card-body app-card-list "  v-show="active==3">
+    <el-form class="demo-ruleForm"  label-width="100px" :model="ruleForm" :rules="rules" ref="ruleForm">
+       <el-form-item  class="col-umn1" label="名称" prop='title'>
+        <el-input v-model="ruleForm.title"></el-input>
+      </el-form-item>
+     <el-form-item label="父级" prop='menuId'>
+        <el-cascader :options="cascaderoptions" :props="{
+          children: 'submenu',
+          label: 'title',
+          value:'id',
+          checkStrictly: true,
+          multiple:false,
+          emitPath:false
+        }" v-model="ruleForm.menuId" clearable ref="cascader"></el-cascader>
+      </el-form-item>
+      <el-form-item  class="col-umn1" label="图标" prop='icon'>
+        <el-input v-model="ruleForm.icon"></el-input>
+      </el-form-item>
+      <el-form-item  class="col-umn1" label="路径" prop='url'>
+        <el-input v-model="ruleForm.url"></el-input>
+      </el-form-item>
+         <el-form-item  class="col-umn1" label="排序" prop='sort'>
+        <el-input v-model.number="ruleForm.sort"></el-input>
+      </el-form-item>
+         <el-form-item  class="col-umn1" label="描述"  prop='description'>
+        <el-input v-model="ruleForm.description"></el-input>
+      </el-form-item>
+    </el-form>
+  </div>
+    <div class="app-steps">
+        <el-button @click="back">上一步</el-button>
+        <el-button  @click="next" :disabled="nextdisabled">下一步</el-button>
+        <el-button type="primary" :disabled='Isdisabled' @click="Btnsave">完成</el-button>
     </div>
-       <div class="app-steps">
-            <el-button @click="back">上一步</el-button>
-            <el-button  @click="next" :disabled="nextdisabled">下一步</el-button>
-            <el-button type="primary" :disabled='Isdisabled' @click="Btnsave">完成</el-button>
-        </div>
-      </div>
-    </div>
+  </div>
+  </div>
   </div>
 </template>
 <script>
@@ -123,12 +152,32 @@ export default {
       loading: true, // loading加载
       Propertyloading: true,
       QueryForm: {
-        Name: ''
+        modelName: ''
       },
       rules: { // 表单验证
-        showName: [
-          { required: true, message: '请输入显示名称', trigger: 'blur' }
+        url: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        title: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        sort: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        description: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        icon: [
+          { required: true, message: '不能为空', trigger: 'blur' }
         ]
+      },
+      ruleForm: {
+        title: '',
+        menuId: null,
+        url: '#',
+        sort: 0,
+        icon: '#',
+        description: '#'
       },
       active: 0,
       activeName: 'first',
@@ -139,7 +188,9 @@ export default {
       PropertySelect: [],
       Isdisabled: true,
       nextdisabled: false,
-      resultCode: {}
+      resultCode: {},
+      cascaderoptions: []
+
     }
   },
   created  () {
@@ -149,11 +200,14 @@ export default {
     // 查询
     Query () {
       this.loading = true
-      api.get(this.url, { Name: this.QueryForm.Name },
+      api.get(this.url, { modelName: this.QueryForm.modelName },
         data => {
           this.RoletableData = data.data
           this.loading = false
         }, er => { this.loading = false; this.RoletableData = [] })
+      api.Query(api.apiUrl.MenusPower, data => {
+        this.cascaderoptions = data.data
+      }, this.QueryForm, error => { this.loading = false; console.error(error) })
     },
     // 重置
     reset () {
@@ -172,7 +226,7 @@ export default {
       this.nextdisabled = false
     },
     next () {
-      if (this.active < 2) {
+      if (this.active < 3) {
         if ((this.active === 0 && this.TableSelect.length === 0) || this.TableSelect.length > 1) {
           this.$notify({
             title: '提示',
@@ -183,15 +237,20 @@ export default {
           return
         }
         if (this.active === 1) {
-          this.showCode(() => { this.active++; this.Isdisabled = false; this.nextdisabled = true })
+          this.showCode(() => { this.active++ })
           return
         }
         this.active++
+        this.Isdisabled = true
+        if (this.active === 1) {
+          this.ShowProperty()
+        }
+        this.PaneShow()
+        if (this.active === 3) {
+          this.Isdisabled = false
+          this.nextdisabled = true
+        }
       }
-
-      this.Isdisabled = true
-      this.PaneShow()
-      this.ShowProperty()
     },
     PaneShow () {
       api.get(api.apiUrl.GetTemplateConfig, { },
@@ -200,16 +259,44 @@ export default {
         }, er => { this.loading = false })
     },
     showCode (result) {
-      api.post(api.apiUrl.CodeCreate, { model: this.TableSelect[0], Propertys: this.PropertySelect, IsPaging: this.TemplateConfig.isPaging, tableToolOn: this.TemplateConfig.tableToolOn },
-        data => {
-          this.TemplateCode = data.data
-          result()
-        }, er => { result() })
+      api.post(api.apiUrl.CodeCreate, {
+        model: this.TableSelect[0],
+        Propertys: this.PropertySelect,
+        IsPaging: this.TemplateConfig.isPaging,
+        tableToolOn: this.TemplateConfig.tableToolOn
+      },
+      data => {
+        this.TemplateCode = data.data
+        result()
+      }, er => { result() })
     },
     Btnsave () {
-      api.put(api.apiUrl.CodeCreate, { model: this.TableSelect[0], Propertys: this.PropertySelect, IsPaging: this.TemplateConfig.isPaging, tableToolOn: this.TemplateConfig.tableToolOn },
-        data => {
-        }, er => { })
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          this.ruleForm.menuId = this.ruleForm.menuId == null ? 0 : this.ruleForm.menuId
+          api.put(api.apiUrl.CodeCreate, {
+            model: this.TableSelect[0],
+            Propertys: this.PropertySelect,
+            IsPaging: this.TemplateConfig.isPaging,
+            tableToolOn: this.TemplateConfig.tableToolOn,
+            menuId: this.ruleForm.menuId,
+            url: this.ruleForm.url,
+            sort: this.ruleForm.sort,
+            description: this.ruleForm.description,
+            title: this.ruleForm.title,
+            icon: this.ruleForm.icon
+          },
+          data => {
+            this.active = 0
+            this.Isdisabled = true
+            this.nextdisabled = false
+            this.$refs.ruleForm.resetFields()
+            this.$refs.ruleForm.clearValidate()
+          }, er => { })
+        } else {
+          return false
+        }
+      })
     },
     ShowProperty () {
       this.PropertyData = []
@@ -251,5 +338,8 @@ pre{
     counter-increment: step 0;
     position: relative;
 
+}
+.col-umn1 .el-select {
+    width: 100% !important;
 }
 </style>

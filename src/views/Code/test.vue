@@ -7,10 +7,10 @@
       <el-form-item label="条件" prop='parameter'>
         <el-input placeholder="条件" v-model="QueryForm.parameter"></el-input>
       </el-form-item>
-      <el-form-item>
+     <el-form-item class="btnQuery">
         <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>

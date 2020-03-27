@@ -10,10 +10,10 @@
       <el-form-item label="异常信息" prop='errormsg'>
         <el-input placeholder="异常信息" v-model="QueryForm.errormsg"></el-input>
       </el-form-item>
-      <el-form-item>
+     <el-form-item class="btnQuery">
         <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="btnQuery">
         <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>

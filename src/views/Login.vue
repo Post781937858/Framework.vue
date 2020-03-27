@@ -59,7 +59,8 @@ export default {
           router.resetRouter()
           api.add(api.apiUrl.Login, data => {
             if (data.state === 200) {
-              localStorage.setItem('Authorization', data.data)
+              localStorage.setItem('user', JSON.stringify(data.data.user))
+              localStorage.setItem('Authorization', data.data.token)
               api.Query(api.apiUrl.Menus, data => {
                 localStorage.setItem('menus', JSON.stringify(data.data))
                 this.analysisRouter(data.data)
@@ -139,7 +140,7 @@ export default {
   }
   .Login-content{
     width: 398px;
-    height: 347px;
+    height: 365px;
       position: absolute;
       left: 50%;
       top: 50%;
