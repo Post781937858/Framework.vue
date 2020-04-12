@@ -1,8 +1,9 @@
 
 // const CompressionWebpackPlugin = require('compression-webpack-plugin')
 // const productionGzipExtensions = ['js', 'css']
-// // const isProduction = process.env.NODE_ENV === 'production'
-// const isProduction = false
+// const isProduction = process.env.NODE_ENV === 'production'
+const webpack = require('webpack')
+// const isProduction = true
 module.exports = {
 // 基本路径
   publicPath: '/',
@@ -11,29 +12,52 @@ module.exports = {
   // eslint-loader 是否在保存的时候检查
   lintOnSave: true,
   // runtimeCompiler: true, // 关键点在这
-  configureWebpack: config => {
-    // if (isProduction) {
-    //   config.externals = {
-    //     'vue': 'Vue',
-    //     'emlenent-ui': 'ELENENT',
-    //     'vue-router': 'VueRouter',
-    //     'vuex': 'Vuex',
-    //     'echarts': 'echarts'
-    //   }
-    //   config.plugins.push(new CompressionWebpackPlugin({
-    //     algorithm: 'gzip',
-    //     test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
-    //     threshold: 10240,
-    //     minRatio: 0.8
-    //   }))
-    // }
+  // configureWebpack: config => {
+  //   if (isProduction) {
+  //     // config.externals = {
+  //     //   'vue': 'Vue',
+  //     //   'emlenent-ui': 'ELENENT',
+  //     //   'vue-router': 'VueRouter',
+  //     //   'vuex': 'Vuex',
+  //     //   'echarts': 'echarts'
+  //     // }
+  //     config.plugins.push(new CompressionWebpackPlugin({
+  //       algorithm: 'gzip',
+  //       test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+  //       threshold: 10240,
+  //       minRatio: 0.8
+  //     }))
+  //     config.plugins.push(
+  //       new webpack.ProvidePlugin({
+  //         $: 'jquery',
+  //         jQuery: 'jquery',
+  //         'windows.jQuery': 'jquery'
+  //       })
+  //     )
+  //   }
+  // },
+  configureWebpack: {
+
+    plugins: [
+
+      new webpack.ProvidePlugin({
+
+        $: 'jquery',
+        jQuery: 'jquery',
+        'window.jQuery': 'jquery',
+        'root.jQuery': 'jquery'
+
+      })
+
+    ]
+
   },
   // webpack配置
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   chainWebpack: () => {},
   // configureWebpack: () => {devtool: 'source-map'},
   // 生产环境是否生成 sourceMap 文件
-  productionSourceMap: true,
+  productionSourceMap: false,
   // css相关配置
   css: {
     // 是否使用css分离插件 ExtractTextPlugin

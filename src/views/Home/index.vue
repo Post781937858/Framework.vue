@@ -3,48 +3,48 @@
     <div class="row">
       <div class="app-Tag">
       <div class="app-Tag-row app-Tag-row-tag">
-           <div class="app-card-header"> 访问量<span class="app-badge app-bg-cyan ">周</span></div>
+           <div class="app-card-header">A库订单<span class="app-badge app-bg-cyan ">日</span></div>
            <div class="app-card-body app-card-list">
-            <p class="app-big-font">9,999,666</p>
+            <p class="app-big-font">{{Tag.TagtodayA}}</p>
             <p>
-              总计访问量
-              <span class="app-span-color">88万<i  class="fa fa-desktop app-ico" ></i></span>
+              总计订单量
+              <span class="app-span-color">{{Tag.TagCountA}}单<i  class="fa fa-desktop app-ico" ></i></span>
             </p>
           </div>
       </div>
     </div>
     <div class="app-Tag">
         <div class="app-Tag-row app-Tag-row-tag">
-          <div class="app-card-header">总用户<span class="app-badge app-bg-blue">周</span></div>
+          <div class="app-card-header">B库订单<span class="app-badge app-bg-blue">日</span></div>
           <div class="app-card-body app-card-list">
-            <p class="app-big-font">9,999,666</p>
+            <p class="app-big-font">{{Tag.TagtodayB}}</p>
             <p>
-              总计用户数
-              <span class="app-span-color">88万<i  class="fa fa-envelope-o app-ico" ></i></span>
+              总计订单量
+              <span class="app-span-color">{{Tag.TagCountB}}单<i  class="fa fa-desktop app-ico" ></i></span>
             </p>
           </div>
       </div>
     </div>
     <div class="app-Tag">
         <div class="app-Tag-row app-Tag-row-tag">
-          <div class="app-card-header"> 收入<span class="app-badge app-bg-green">周</span></div>
+          <div class="app-card-header"> F库订单<span class="app-badge app-bg-green">日</span></div>
           <div class="app-card-body app-card-list">
-            <p class="app-big-font">9,999,666</p>
+            <p class="app-big-font">{{Tag.TagtodayF}}</p>
             <p>
-              总收入
-              <span class="app-span-color">88万<i  class="fa fa-sitemap app-ico" ></i></span>
+              总计订单量
+              <span class="app-span-color">{{Tag.TagCountF}}单<i  class="fa fa-desktop app-ico" ></i></span>
             </p>
           </div>
       </div>
     </div>
     <div class="app-Tag">
         <div class="app-Tag-row app-Tag-row-tag">
-          <div class="app-card-header"> 活跃用户<span class="app-badge app-bg-orange ">周</span></div>
+          <div class="app-card-header"> 设备异常<span class="app-badge app-bg-orange ">日</span></div>
           <div class="app-card-body app-card-list">
-            <p class="app-big-font">9,999,666</p>
+            <p class="app-big-font">3</p>
             <p>
-              新用户数
-              <span class="app-span-color">88万<i  class="fa fa-envelope-o app-ico" ></i></span>
+              总计异常次数
+              <span class="app-span-color">100次<i  class="fa fa-sitemap app-ico" ></i></span>
             </p>
           </div>
       </div>
@@ -52,7 +52,7 @@
     </div>
     <div class="app-centre">
        <div class="app-Tag-row app-Tag-row-rb">
-          <div class="app-card-header">数据统计</div>
+          <div class="app-card-header">订单统计</div>
           <div class="app-card-body app-card-list app-Chart" id="myChart">
 
           </div>
@@ -60,7 +60,7 @@
     </div>
     <div class="app-centre">
        <div class="app-Tag-row app-Tag-row-rb">
-          <div class="app-card-header"> 访问统计</div>
+          <div class="app-card-header"> 异常统计</div>
           <div class="app-card-body app-card-list app-Chart" id="myChart1">
 
           </div>
@@ -70,18 +70,32 @@
 </template>
 <script>
 import theme from '@/assets/theme/theme'
+import api from '@/api/api'
 export default {
   data () {
     return {
+      url: '/api/MianStatisticsView',
+      QueryTagurl: '/api/MianStatisticsView/QueryTag',
       myChart: {},
       myChart1: {},
       timer: false,
-      initialize: false
+      initialize: false,
+      dataTime: [],
+      dataChart: [],
+      Tag: {
+        TagtodayA: 0,
+        TagCountA: 0,
+        TagtodayB: 0,
+        TagCountB: 0,
+        TagtodayF: 0,
+        TagCountF: 0
+      }
     }
   },
   created () {
     this.$nextTick(() => {
       this.drawLine()
+      this.initChartData()
       setTimeout(() => { this.initialize = true }, 1000)
     })
   },
@@ -98,6 +112,7 @@ export default {
       if (!_this.timer && _this.initialize) {
         _this.timer = true
         setTimeout(() => {
+          console.log('444')
           _this.myChart.resize()
           _this.myChart1.resize()
           _this.timer = false
@@ -111,6 +126,27 @@ export default {
     }
   },
   methods: {
+    initChartData () {
+      api.get(this.QueryTagurl, { },
+        data => {
+          if (data.state === 200) {
+            this.Tag.TagtodayA = data.data.warehouseA
+            this.Tag.TagCountA = data.data.warehouseCountA
+            this.Tag.TagtodayF = data.data.warehouseF
+            this.Tag.TagCountF = data.data.warehouseCountF
+            this.Tag.TagtodayB = data.data.warehouseB
+            this.Tag.TagCountB = data.data.warehouseCountB
+          }
+        }, er => { })
+      api.get(this.url, { },
+        data => {
+          if (data.state === 200) {
+            this.dataTime = data.data.dataTime
+            this.dataChart = data.data.data
+            this.drawLine()
+          }
+        }, er => { })
+    },
     drawLine () {
       this.$echarts.registerTheme('theme', theme) // 注册主题
       // 基于准备好的dom，初始化echarts实例
@@ -128,7 +164,7 @@ export default {
           }
         },
         legend: {
-          data: ['RGV库', '穿梭车库', '重载库']
+          data: ['A库', 'B库', 'F库']
         },
         grid: {
           left: '3%',
@@ -139,8 +175,10 @@ export default {
         xAxis: [
           {
             type: 'category',
-            boundaryGap: false,
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            data: this.dataTime,
+            axisTick: {
+              alignWithLabel: true
+            }
           }
         ],
         yAxis: [
@@ -149,26 +187,26 @@ export default {
           }
         ],
         series: [
+
           {
-            name: 'RGV库',
-            type: 'line',
+            name: 'B库',
+            type: 'bar',
             stack: '总量',
             areaStyle: {},
-            data: [120, 132, 101, 134, 90, 230, 210]
+            data: this.dataChart[1]
+          }, {
+            name: 'A库',
+            type: 'bar',
+            stack: '总量',
+            areaStyle: {},
+            data: this.dataChart[0]
           },
           {
-            name: '穿梭车库',
-            type: 'line',
+            name: 'F库',
+            type: 'bar',
             stack: '总量',
             areaStyle: {},
-            data: [220, 182, 191, 234, 290, 330, 310]
-          },
-          {
-            name: '重载库',
-            type: 'line',
-            stack: '总量',
-            areaStyle: {},
-            data: [150, 232, 201, 154, 190, 330, 410]
+            data: this.dataChart[2]
           }
 
         ]

@@ -63,6 +63,13 @@ html {
     display: block;
     width: 100%;
 }
+.app-column1{
+  -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    display:inline-block;
+    width: 50%;
+}
 .app-Tag-row{
 
   background: white;
@@ -116,66 +123,6 @@ app-card-list {
     padding-top: 10px;
     text-align: left;
 }
-::-webkit-scrollbar {
-    width: 9px;
-    height: 9px;
-}
-
-/*外层轨道。可以用display:none让其不显示，也可以添加背景图片，颜色改变显示效果*/
-
-::-webkit-scrollbar-track {
-    width: 6px;
-    background-color: #B3B3B3;
-    -webkit-border-radius: 1.1em;
-    -moz-border-radius: 1.1em;
-    border-radius: 1.1em;
-    display: none;
-}
-
-/*滚动条的设置*/
-
-::-webkit-scrollbar-thumb {
-    background-color: #B3B3B3;
-    background-clip: padding-box;
-    min-height: 28px;
-    -webkit-border-radius: 1.1em;
-    -moz-border-radius: 1.1em;
-    border-radius: 1.1em;
-}
-    /*滚动条移上去的背景*/
-
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #B3B3B3;
-    }
-
--moz-scrollbar {
-    width: 9px;
-    height: 9px;
-}
-
-/*外层轨道。可以用display:none让其不显示，也可以添加背景图片，颜色改变显示效果*/
-
--moz-scrollbar-track {
-    width: 6px;
-    background-color: #B3B3B3;
-    -webkit-border-radius: 1.1em;
-    -moz-border-radius: 1.1em;
-    border-radius: 1.1em;
-    display: none;
-}
-
-/*滚动条的设置*/
-
--moz-scrollbar-thumb {
-    background-color: #B3B3B3;
-    background-clip: padding-box;
-    min-height: 28px;
-    -webkit-border-radius: 1.1em;
-    -moz-border-radius: 1.1em;
-    border-radius: 1.1em;
-}
-    /*滚动条移上去的背景*/
-
     -moz-scrollbar-thumb:hover {
         background-color: #B3B3B3;
     }
@@ -398,10 +345,13 @@ padding-left: 20px;
 .btnQuery{
 padding-left: 0px;
 }
-   .el-form--inline .el-form-item__label {
-    float: none !important;
-    min-width: 80px !important;
-    display: block !important;
+.login-title{
+font-size: 25px;
+}
+  .el-form--inline .el-form-item__label {
+  float: none !important;
+  min-width: 80px !important;
+  display: block !important;
 }
 .el-form--inline .el-form-item__content {
     margin-left:0px!important;

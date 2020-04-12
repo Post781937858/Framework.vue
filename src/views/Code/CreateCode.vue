@@ -30,6 +30,7 @@
         header-row-class-name="app_heard"
          @selection-change='SelectedChange'
         row-class-name=''
+        :stripe='true'
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="white" >

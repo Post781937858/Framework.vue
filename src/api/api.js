@@ -35,7 +35,9 @@ const _apiUrl = {
 
   getUser: '/api/User/GetUser',
 
-  userSetting: '/api/User/userSetting'
+  userSetting: '/api/User/userSetting',
+
+  ChangePassword: '/api/User/ChangePassword'
 }
 
 let base = ''
@@ -59,7 +61,7 @@ axios.interceptors.response.use((response) => {
   if (error.response) {
     switch (error.response.status) {
       case 500:
-        message = '服务器错误'
+        message = '服务器错误，错误信息：' + error.response.data.msg
         break
       case 401:
         message = '无权访问该接口，请确保已经登录'

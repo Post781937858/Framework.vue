@@ -4,19 +4,20 @@
        <div class="app-Tag-row app-Tag-row-panel">
        <div class="app-form">
     <el-form :inline="true"  class="demo-form-inline" ref="QueryForm" :model="QueryForm">
-      <el-form-item label="条件" prop='parameter'>
-        <el-input placeholder="条件" v-model="QueryForm.parameter"></el-input>
-      </el-form-item>
-     <el-form-item class="btnQuery">
+<el-form-item  label='请求路径' prop='path'><el-input placeholder='请求路径' v-model='QueryForm.path'></el-input></el-form-item>
+<el-form-item  label='请求状态' prop='state'><el-select placeholder='请求状态'  v-model='QueryForm.state'><el-option label='succeed' :value='1'></el-option><el-option label='error' :value='2'></el-option></el-select></el-form-item>
+<el-form-item  label='请求用户' prop='userName'><el-input placeholder='请求用户' v-model='QueryForm.userName'></el-input></el-form-item>
+
+      <el-form-item class="btnQuery">
         <el-button type="primary"  @click="Query">查询</el-button>
       </el-form-item>
       <el-form-item class="btnQuery">
-        <el-button  @click="reset">重置</el-button>
+    <el-button  @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
        </div>
-       <div class="form-bar">
-    <el-button-group>
+       <div class="form-bar" >
+    <el-button-group v-if='false'>
    <el-button type="primary" icon="el-icon-plus" @click="BarAdd">新增</el-button>
    <el-button type="primary" icon="el-icon-edit" @click="BarEdit">编辑</el-button>
    <el-button type="primary" icon="el-icon-delete" @click="Bardelete">删除</el-button>
@@ -28,22 +29,26 @@
         @selection-change='SelectedChange'
         header-row-class-name="app_heard"
         row-class-name=''
+        :stripe='true'
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="white"
        >
-            <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
-            <el-table-column prop="time" label="异常时间" align="center"></el-table-column>
-            <el-table-column prop="userId" label="用户id" align="center"></el-table-column>
-            <el-table-column prop="userName" label="用户名称" align="center"></el-table-column>
-            <el-table-column prop="url" label="url" align="center"></el-table-column>
-            <el-table-column prop="errormsg" label="异常信息" align="center"></el-table-column>
-            <el-table-column prop="errorstack" label="堆栈" align="center"></el-table-column>
+            <!-- <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column> -->
+            <el-table-column prop="requestTime" label="请求时间"  width="250"  align="center"></el-table-column>
+             <el-table-column prop="method" label="请求类型" align="center"></el-table-column>
+            <el-table-column prop="path" label="请求路径" align="center"  width="250"></el-table-column>
+            <el-table-column prop="urlparameter" label="URL参数"   width="500" align="center"></el-table-column>
+            <el-table-column prop="state" label="请求状态" align="center">
+                <template slot-scope="scope">
+                <el-tag class="statetag "  :class="Statusclass(scope.row.state)" disable-transitions>{{statesformat(scope.row.state)}}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="consumingTime" label="耗时" align="center"></el-table-column>
+            <el-table-column prop="userName" label="请求用户" align="center"></el-table-column>
       <el-table-column label="操作" width="180"  align="center" >
         <template slot-scope="scope" >
-          <div><a  @click="AppEdit(scope.$index, scope.row)">编辑</a>
-          <div class="ivu-divider ivu-divider-vertical ivu-divider-default"></div>
-           <a  @click="AppDelete(scope.$index, scope.row)">删除</a>
+          <div><a  @click="AppEdit(scope.$index, scope.row)">详情</a>
           </div>
       </template>
     </el-table-column>
@@ -55,67 +60,42 @@
       </div>
     </div>
     <el-dialog
-      title="编辑"
+      title="详情"
       @close="resetdialog"
       :append-to-body='true'
       :visible.sync="dialogVisible"
-      width="27%">
-      <el-form :model="ruleForm" label-position="top" label-width="80px" :rules="rules" ref='ruleForm' >
-      <el-form-item label="异常时间" prop='time'>
-        <el-input  v-model="ruleForm.time"></el-input>
-      </el-form-item>
-      <el-form-item label="用户id" prop='userId'>
-        <el-input  v-model.number="ruleForm.userId"></el-input>
-      </el-form-item>
-      <el-form-item label="用户名称" prop='userName'>
-        <el-input  v-model="ruleForm.userName"></el-input>
-      </el-form-item>
-      <el-form-item label="url" prop='url'>
-        <el-input  v-model="ruleForm.url"></el-input>
-      </el-form-item>
-      <el-form-item label="异常信息" prop='errormsg'>
-        <el-input  v-model="ruleForm.errormsg"></el-input>
-      </el-form-item>
-      <el-form-item label="堆栈" prop='errorstack'>
-        <el-input  v-model="ruleForm.errorstack"></el-input>
-      </el-form-item>
+      width="1000px">
+      <el-form :model="ruleForm" class="demo-form-inline" :inline="true" label-width="80px"  ref='ruleForm'>
+      <el-form-item class='col-2' label='请求路径' prop='path'><el-input placeholder='请求路径' v-model='ruleForm.path'></el-input></el-form-item>
+      <el-form-item class='col-2'  label='请求时间' prop='requestTime'><el-date-picker placeholder='请求时间' v-model='ruleForm.requestTime'></el-date-picker></el-form-item>
+      <el-form-item class='col-2' label='URL参数' prop='urlparameter'><el-input placeholder='URL参数' v-model='ruleForm.urlparameter'></el-input></el-form-item>
+      <el-form-item class='col-2' label='请求参数' prop='formDataparameter'><el-input placeholder='请求参数' v-model='ruleForm.formDataparameter'></el-input></el-form-item>
+      <el-form-item class='col-2' label='请求状态' prop='state'><el-select placeholder='请求状态'  v-model='ruleForm.state'><el-option label='succeed' :value='1'></el-option><el-option label='error' :value='2'></el-option></el-select></el-form-item>
+      <el-form-item class='col-2' label='耗时' prop='consumingTime'><el-input placeholder='耗时' v-model='ruleForm.consumingTime'></el-input></el-form-item>
+      <el-form-item class='col-2' label='请求用户' prop='userName'><el-input placeholder='请求用户' v-model='ruleForm.userName'></el-input></el-form-item>
+      <el-form-item class='col-1'  label='响应数据' prop='responseData'><el-input  placeholder='响应数据' v-model='ruleForm.responseData'></el-input></el-form-item>
     </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="dialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="submitForm" v-if="false">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
-// import api from '@/api/api'
 import elPagination from '@/components/Pagination'
 export default {
   components: { elPagination },
   data () {
     return {
-      url: '/api/ErrorLog',
+      url: '/api/ApiRequestLog',
       RoletableData: [],
       loading: true, // loading加载
-      QueryForm: {},
-      dialogVisible: false, // dialog显示
-      rules: { // 表单验证
-        userNumber: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        checkpassword: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        powerName: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        showName: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ]
+      QueryForm: { path: '',
+        state: null,
+        userName: ''
       },
+      dialogVisible: false, // dialog显示
       ruleForm: {}, // 表单模型
       Isedit: false, // 是否编辑
       TableSelect: []
@@ -125,6 +105,24 @@ export default {
 
   },
   methods: {
+    statesformat (state) {
+      if (state === 1) {
+        return '成功'
+      } else if (state === 2) {
+        return '失败'
+      } else {
+        return '未知'
+      }
+    },
+    Statusclass (state) {
+      if (state === 0) {
+        return 'tag-warn'
+      } else if (state === 1) {
+        return 'tag-succeed'
+      } else {
+        return 'tag-error'
+      }
+    },
     // 查询
     Query () {
       this.$refs.Page.refresh()

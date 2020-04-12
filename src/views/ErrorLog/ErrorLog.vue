@@ -7,7 +7,7 @@
       <el-form-item label="用户名称" prop='UserName'>
         <el-input placeholder="用户名称" v-model="QueryForm.UserName"></el-input>
       </el-form-item>
-      <el-form-item label="异常信息" prop='errormsg'>
+      <el-form-item label="异常信息" prop='errormsg' v-if='false'>
         <el-input placeholder="异常信息" v-model="QueryForm.errormsg"></el-input>
       </el-form-item>
      <el-form-item class="btnQuery">
@@ -18,8 +18,8 @@
       </el-form-item>
     </el-form>
        </div>
-       <div class="form-bar">
-    <el-button-group>
+       <div class="form-bar"  v-if="false" >
+    <el-button-group >
    <el-button type="primary" icon="el-icon-plus" @click="BarAdd">新增</el-button>
    <el-button type="primary" icon="el-icon-edit" @click="BarEdit">编辑</el-button>
    <el-button type="primary" icon="el-icon-delete" @click="Bardelete">删除</el-button>
@@ -36,13 +36,12 @@
         element-loading-background="white"
        >
             <el-table-column prop="id"  type="selection" align="center"  width="40"></el-table-column>
-            <el-table-column prop="time" label="异常时间" align="center"></el-table-column>
-            <el-table-column prop="userId" label="用户id" align="center"></el-table-column>
-            <el-table-column prop="userName" label="用户名称" align="center"></el-table-column>
-            <el-table-column prop="url" label="url" align="center"></el-table-column>
-            <el-table-column prop="errormsg" label="异常信息" align="center"></el-table-column>
-            <el-table-column prop="errorstack" label="堆栈" align="center"></el-table-column>
-      <el-table-column label="操作" width="180"  align="center" >
+            <el-table-column prop="time" width="180" label="异常时间" align="center"></el-table-column>
+            <!-- <el-table-column prop="userId" width="120" label="用户id" align="center"></el-table-column> -->
+            <el-table-column prop="userName" width="120" label="用户名称" align="center"></el-table-column>
+            <el-table-column prop="url" label="url"  width="180" align="center"></el-table-column>
+            <el-table-column prop="errormsg" label="异常信息"  width="1000" align="center"></el-table-column>
+      <el-table-column label="操作" width="180"  align="center" v-if="false" >
         <template slot-scope="scope" >
           <div><a  @click="AppEdit(scope.$index, scope.row)">编辑</a>
           <div class="ivu-divider ivu-divider-vertical ivu-divider-default"></div>

@@ -40,7 +40,7 @@
                 <el-tag class="statetag "  :class="Statusclass(scope.row.runStatus)" disable-transitions>{{Statusformat(scope.row.runStatus)}}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="assemblyName" width="180" label="程序集名称" align="center"></el-table-column>
+            <el-table-column prop="assemblyName" width="200" label="程序集名称" align="center"></el-table-column>
             <el-table-column prop="className" width="180" label="Job类名" align="center"></el-table-column>
             <el-table-column prop="runTimes" width="180" label="执行次数" align="center"></el-table-column>
             <el-table-column prop="intervalSecond" width="180" label="执行间隔时间" align="center"></el-table-column>
@@ -71,13 +71,13 @@
       :visible.sync="dialogVisible"
       width="1000px">
       <el-form :model="ruleForm" class="demo-form-inline" :inline="true" label-width="100px"  :rules="rules" ref='ruleForm'>
-<el-form-item  class="col-2" label='任务分组' prop='jobGroup'><el-input placeholder='任务分组' v-model='ruleForm.jobGroup'></el-input></el-form-item>
-<el-form-item  class="col-2" label='任务名称' prop='jobName'><el-input placeholder='任务名称' v-model='ruleForm.jobName'></el-input></el-form-item>
-<el-form-item  class="col-2" label='表达式' prop='cron'><el-input placeholder='执行周期表达式' v-model='ruleForm.cron'></el-input></el-form-item>
-<el-form-item  class="col-2" label='程序集名称' prop='assemblyName'><el-input placeholder='程序集名称' v-model='ruleForm.assemblyName'></el-input></el-form-item>
-<el-form-item  class="col-2" label='Job类名' prop='className'><el-input placeholder='Job类名' v-model='ruleForm.className'></el-input></el-form-item>
-<el-form-item  class="col-2"  label='执行次数' prop='runTimes'><el-input placeholder='执行次数' v-model.number='ruleForm.runTimes'></el-input></el-form-item>
-<el-form-item  class="col-2" label='间隔时间' prop='intervalSecond'><el-input placeholder='执行间隔时间' v-model.number='ruleForm.intervalSecond'></el-input></el-form-item>
+      <el-form-item  class="col-2" label='任务分组' prop='jobGroup'><el-input placeholder='任务分组' v-model='ruleForm.jobGroup'></el-input></el-form-item>
+      <el-form-item  class="col-2" label='任务名称' prop='jobName'><el-input placeholder='任务名称' v-model='ruleForm.jobName'></el-input></el-form-item>
+      <el-form-item  class="col-2" label='表达式' prop='cron'><el-input placeholder='执行周期表达式' v-model='ruleForm.cron'></el-input></el-form-item>
+      <el-form-item  class="col-2" label='程序集名称' prop='assemblyName'><el-input placeholder='程序集名称' v-model='ruleForm.assemblyName'></el-input></el-form-item>
+      <el-form-item  class="col-2" label='Job类名' prop='className'><el-input placeholder='Job类名' v-model='ruleForm.className'></el-input></el-form-item>
+      <el-form-item  class="col-2"  label='执行次数' prop='runTimes'><el-input placeholder='执行次数' v-model.number='ruleForm.runTimes'></el-input></el-form-item>
+      <el-form-item  class="col-2" label='间隔时间' prop='intervalSecond'><el-input placeholder='执行间隔时间' v-model.number='ruleForm.intervalSecond'></el-input></el-form-item>
     </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>

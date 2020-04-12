@@ -1,27 +1,35 @@
 <template>
-<div class="Login">
-  <div class="Login-head">
-    <span>Vue and .NET Core前后端分离开发框架</span>
-  </div>
+<div class="Login" :style="note">
    <div class="Login-content">
-     <div  class="card-header">系统登录</div>
+     <div  class="header">
+       <img :src="require('../assets/Bjlog.png')">
+     </div>
+       <div  class="header-title">
+       <span  class="login-title">VUE AND .NET CORE</span>
+     </div>
       <div class="form-content">
          <el-form   label-position="top"  label-width="80px" :model="formdata" :rules="rules" ref='ruleForm'>
-        <el-form-item label="账号" prop='userNumber'>
-          <el-input v-model="formdata.userNumber"  style="height: 40px"  placeholder="请输入账号"></el-input>
+        <el-form-item  prop='userNumber'>
+          <el-input prefix-icon="el-icon-user-solid" v-model="formdata.userNumber"  style="height: 40px"  placeholder="请输入账号"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop='password'>
-          <el-input placeholder="请输入密码"  style="height: 40px"  v-model="formdata.password" show-password></el-input>
+        <el-form-item  style="margin-top: 30px;" prop='password'>
+          <el-input  prefix-icon="el-icon-lock" placeholder="请输入密码"  style="height: 40px"  v-model="formdata.password" show-password></el-input>
         </el-form-item>
+        <el-form-item style="margin-top: 10px;">
+         <el-checkbox v-model="formdata.checked" >自动登陆</el-checkbox>
+      </el-form-item>
       <el-form-item>
         <el-button class="Submit" :loading="Isloading" type="primary" @click="onSubmit">{{msg}}</el-button>
       </el-form-item>
       </el-form>
-      <div class="form-bottom">
+      <!-- <div class="form-bottom">
         <a href="#" class="form-bottom-link">免费注册</a>
         <a href="#" class="form-bottom-link">忘记密码</a>
+      </div> -->
       </div>
-      </div>
+   </div>
+   <div class="footer">
+     <div  class="copyright">&copy; 2020 GALAXIS 版权所有</div>
    </div>
 </div>
 </template>
@@ -34,7 +42,8 @@ export default {
     return {
       formdata: {
         userNumber: '',
-        password: ''
+        password: '',
+        checked: false
       },
       msg: '立即登录',
       Isloading: false,
@@ -46,9 +55,19 @@ export default {
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
+      },
+      note: {
+        backgroundImage: 'url(' + require('../assets/bg.svg') + ')'
       }
     }
   },
+  mounted () {
+    let IsAutoLogonData = JSON.parse(localStorage.getItem('AutoLogon'))
+    if (IsAutoLogonData != null && IsAutoLogonData.IsAutoLogon && localStorage.getItem('Authorization') != null) {
+      this.$router.push({ name: 'HomeMain' })
+    }
+  },
+
   methods: {
     onSubmit () {
       this.$refs['ruleForm'].validate((valid) => {
@@ -59,6 +78,11 @@ export default {
           router.resetRouter()
           api.add(api.apiUrl.Login, data => {
             if (data.state === 200) {
+              if (this.formdata.checked) {
+                localStorage.setItem('AutoLogon', JSON.stringify({ IsAutoLogon: true }))
+              } else {
+                localStorage.removeItem('AutoLogon')
+              }
               localStorage.setItem('user', JSON.stringify(data.data.user))
               localStorage.setItem('Authorization', data.data.token)
               api.Query(api.apiUrl.Menus, data => {
@@ -66,15 +90,6 @@ export default {
                 this.analysisRouter(data.data)
                 localStorage.setItem('Usermenus', JSON.stringify(this.routerList))
                 router.$addRoutes(filterAsyncRouter(JSON.parse(localStorage.getItem('Usermenus'))))
-                // setTimeout(() => {
-                //   this.$notify({
-                //     title: '成功',
-                //     message: '欢迎登录，系统初始化成功',
-                //     duration: 3000,
-                //     type: 'success'
-                //   })
-                //   this.$router.push({ name: 'HomeMain' })
-                // }, 500)
                 this.$router.push({ name: 'HomeMain' })
               }, null, error => {
                 this.Isloading = false
@@ -117,7 +132,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .el-input__inner {
     height: 40px  !important;
     line-height:40px  !important;
@@ -126,8 +141,8 @@ export default {
     position:absolute;
     width:100%;
     height:100%;
-    background: #2d3a4b;
-    /* min-height: 800px; */
+    background: #f0f2f5;
+    background-image: "url(" + require("../../assets/save.png") + ")"'./assets/bg.svg';
   }
   .Login-head{
    width: 100%;
@@ -139,14 +154,11 @@ export default {
    margin-top: 110px;
   }
   .Login-content{
-    width: 398px;
-    height: 365px;
+    width: 450px;
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 6px black;
-      background: white;
        border-radius:3px;
        opacity: 0.9.1;
   }
@@ -155,6 +167,29 @@ export default {
     margin-bottom: 0;
     background-color: rgba(0, 0, 0, 0.03);
     border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  }
+  .header{
+    text-align: center;
+    height: 70px;
+    line-height: 70px;
+    margin-bottom: 20px;
+  }
+  .header-title{
+    text-align: center;
+    height: 70px;
+    line-height: 70px;
+    margin-bottom: 40px;
+  }
+  .header img{
+    vertical-align: top;
+  }
+  .login-title{
+    font-size: 33px;
+    color: rgba(0,0,0,.85);
+    font-family: Myriad Pro,Helvetica Neue,Arial,Helvetica,sans-serif;
+    font-weight: 600;
+    position: relative;
+    top: 2px;
   }
   .form-content{
     padding: 0.8em;
@@ -174,7 +209,18 @@ export default {
 }
 .Submit{
   width:100%;
-  margin-top:28px;
   height: 40px !important;
+}
+.copyright{
+  color: rgba(0,0,0,.45);
+    font-size: 14px;
+}
+.footer{
+   position: fixed;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    padding:30px 0px;
+    text-align: center;
 }
 </style>

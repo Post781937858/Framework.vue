@@ -43,7 +43,7 @@
        <div class="dropdown-menu-item">
         <ul class="main-top-head-menu head-menu-right">
         <li><i data-v-68e61d72="" class="fa fa-envelope-o "></i></li>
-        <li><i data-v-68e61d72="" class="fa fa-arrows-alt "></i></li>
+        <li @click="handleFullScreen"><i  data-v-68e61d72="" class="fa fa-arrows-alt "></i></li>
       </ul>
        </div>
      <div class="dropdown-menu-item" style=" padding-right: 10px;">
@@ -91,14 +91,14 @@
 
     </ScrollPane>
 <div class="menu-bar" type="primary">
-    <el-dropdown>
+    <el-dropdown @command="tagCommand">
        <span class="el-dropdown-link">
        <i class="el-down fa fa-angle-double-down fa-lg tag-menu" ></i>
       </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>关闭当前页</el-dropdown-item>
-          <el-dropdown-item>关闭其它页</el-dropdown-item>
-          <el-dropdown-item>关闭所有页</el-dropdown-item>
+          <el-dropdown-item  command="1">关闭当前页</el-dropdown-item>
+          <el-dropdown-item  command="2">关闭其它页</el-dropdown-item>
+          <el-dropdown-item  command="3">关闭所有页</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -106,13 +106,29 @@
       <!-- </div> -->
    </div>
    <div class="main-content" ref="NavMain">
-     <!-- <el-scrollbar style="height:100%;"> -->
+     <el-scrollbar style="height:100%;">
        <!-- <keep-alive>
 
       </keep-alive> -->
        <router-view></router-view>
-     <!-- </el-scrollbar> -->
+     </el-scrollbar>
    </div>
+<el-dialog
+      title="修改密码"
+      @close="resetdialog"
+      :append-to-body='true'
+      :visible.sync="dialogVisible"
+      width="600px">
+      <el-form :model="ruleForm"  label-width="120px" :rules="rules" ref='ruleForm'>
+    <el-form-item  label='原密码' prop='originalPassword'><el-input placeholder='原密码'  type="password" v-model='ruleForm.originalPassword'></el-input></el-form-item>
+    <el-form-item  label='新密码' prop='Password'><el-input placeholder='新密码' type="password"  v-model='ruleForm.Password'></el-input></el-form-item>
+    <el-form-item  label='再次输入密码' prop='checkPassword'><el-input type="password" placeholder='再次输入密码' v-model='ruleForm.checkPassword'></el-input></el-form-item>
+    </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -123,13 +139,44 @@ import api from '@/api/api'
 export default {
   components: { Menubar, ScrollPane },
   data () {
+    var validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.ruleForm.checkPassword !== '') {
+          this.$refs.ruleForm.validateField('checkPassword')
+        }
+        callback()
+      }
+    }
+    var validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.ruleForm.Password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       dynamicTags: [{ 'title': '系统首页', 'Tagcalss': 'el-tag-select', 'path': '/HomeMain' }],
       screenWidth: document.body.clientWidth, // 这里是给到了一个默认值 （这个很重要）
       tltle_text: true,
       tltle_icon: false,
       isCollapse: false,
+      dialogVisible: false, // dialog显示
+      fullscreen: false,
       routes: [],
+      rules: { // 表单验证
+        originalPassword: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        Password: [{ validator: validatePass, trigger: 'blur' }],
+        checkPassword: [{ validator: validatePass2, trigger: 'blur' }]
+      },
+      ruleForm: {
+        originalPassword: '',
+        Password: '',
+        checkPassword: ''
+      },
       user: {
         name: '',
         imgurl: ''
@@ -156,6 +203,20 @@ export default {
     this.init(that.screenWidth)
   },
   methods: {
+    resetdialog () {
+      this.$refs.ruleForm.resetFields()
+      this.$refs.ruleForm.clearValidate()
+    },
+    submitForm () {
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          api.post(api.apiUrl.ChangePassword, { originalPassword: this.ruleForm.originalPassword, checkPassword: this.ruleForm.checkPassword },
+            data => { if (data.state === 200) { this.dialogVisible = false } }, er => { })
+        } else {
+          return false
+        }
+      })
+    },
     GetImg (filename) {
       return api.GetImg(filename)
     },
@@ -216,8 +277,38 @@ export default {
             this.NavMenuselect(this.$route.path, null)
           }
           break
-        case 2: break
+        case 2: this.dialogVisible = true; break
         case 3:this.exit(); break
+      }
+    },
+    tagCommand (command) {
+      switch (parseInt(command)) {
+        case 1:
+          let tags = this.dynamicTags.filter(p => p.path === this.$route.path)
+          if (tags.length !== 0 && this.$route.path !== '/HomeMain') {
+            this.TagClose(tags[0])
+          }
+          break
+        case 2:
+          let tagarray = this.dynamicTags.filter(p => p.path !== this.$route.path && p.path !== '/HomeMain')
+          if (tagarray.length > 0) {
+            const that = this
+            tagarray.forEach(p => {
+              let index = that.dynamicTags.indexOf(p)
+              that.dynamicTags.splice(index, 1)
+            }
+            )
+          }
+          break
+        case 3:
+          let taglist = this.dynamicTags.filter(p => p.path !== '/HomeMain')
+          if (taglist.length > 0) {
+            taglist.forEach(p => {
+              this.TagClose(p)
+            }
+            )
+          }
+          break
       }
     },
     exit () {
@@ -239,6 +330,32 @@ export default {
       localStorage.setItem('user', JSON.stringify(cacheuser))
       this.user.name = name
       this.user.imgurl = imgurl
+    },
+    handleFullScreen () {
+      let element = document.documentElement
+      if (this.fullscreen) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen()
+        } else if (document.webkitCancelFullScreen) {
+          document.webkitCancelFullScreen()
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen()
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen()
+        }
+      } else {
+        if (element.requestFullscreen) {
+          element.requestFullscreen()
+        } else if (element.webkitRequestFullScreen) {
+          element.webkitRequestFullScreen()
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen()
+        } else if (element.msRequestFullscreen) {
+          // IE11
+          element.msRequestFullscreen()
+        }
+      }
+      this.fullscreen = !this.fullscreen
     }
   },
   watch: {

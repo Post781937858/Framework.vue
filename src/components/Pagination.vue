@@ -6,9 +6,10 @@
         :page-sizes="[10,30, 50, 90]"
         @size-change='SizeChange'
         @current-change='CurrentChange'
-       layout="prev, pager, next"
+       layout="total, sizes, prev, pager, next, jumper"
         :total="PageCount">
     </el-pagination>
+    <!-- layout="prev, pager, next" -->
 </template>
 <script>
 import api from '@/api/api'
@@ -22,7 +23,7 @@ export default {
   },
   data () {
     return {
-      IshidePage: false, // 是否隐藏分页
+      IshidePage: true, // 是否隐藏分页
       PageCount: 0, // 分页条数
       PageIndex: 1, // 当页
       PageSize: 10 // 页面大小
@@ -54,11 +55,12 @@ export default {
           data: this.parameter
         },
         data => {
+          this.$emit('loading', false)
           this.IshidePage = false
           this.$emit('get', data.data.data)
           this.PageCount = data.data.dataCount
-          this.$emit('loading', false)
-          if (this.PageCount === 0) this.IshidePage = true
+          this.IshidePage = false
+          if (this.PageCount === 0 || data.data.pageCount === 1) this.IshidePage = true
         }, er => { this.$emit('loading', false) })
     },
     edit (data) {
@@ -79,6 +81,7 @@ export default {
       }, error => { console.log(error) })
     },
     refresh () {
+      this.PageIndex = 0
       this.Query()
     }
   }
