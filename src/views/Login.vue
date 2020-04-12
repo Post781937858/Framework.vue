@@ -2,7 +2,7 @@
 <div class="Login" :style="note">
    <div class="Login-content">
      <div  class="header">
-       <img :src="require('../assets/Bjlog.png')">
+       <img :src="require('../assets/logo.png')">
      </div>
        <div  class="header-title">
        <span  class="login-title">VUE AND .NET CORE</span>
@@ -181,6 +181,8 @@ export default {
     margin-bottom: 40px;
   }
   .header img{
+    width: 100px;
+    height: 100px;
     vertical-align: top;
   }
   .login-title{
