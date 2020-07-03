@@ -39,11 +39,15 @@ const _apiUrl = {
 
   ChangePassword: '/api/User/ChangePassword'
 }
-
 let base = ''
+// let host = ''
+// let port = '8080'
+let host = process.env.NODE_ENV === 'production' ? 'http://47.103.96.90' : 'http://127.0.0.1'
+let port = process.env.NODE_ENV === 'production' ? '8080' : '5001'
 // 如果是IIS部署，用这个，因为 IIS 只能是 CORS 跨域，不能代理
 // base = process.env.NODE_ENV === 'production' ? 'http:/127.0.0.1:5000' : '' 118.31.71.216
-base = 'http://127.0.0.1:5001'
+base = host + ':' + port
+console.log(base)
 // 请求发送拦截，把数据发送给后台之前做些什么......
 axios.interceptors.request.use((request) => {
   request.headers.Authorization = 'Bearer ' + localStorage.getItem('Authorization')
@@ -81,6 +85,7 @@ axios.interceptors.response.use((response) => {
 const api = {}
 
 api.base = base
+api.port = port
 api.apiUrl = _apiUrl
 
 // function GetTime () {

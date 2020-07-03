@@ -187,6 +187,18 @@ export default {
     if (localStorage.getItem('tags') != null) { this.dynamicTags = JSON.parse(localStorage.getItem('tags')) }
     this.routes = JSON.parse(localStorage.getItem('menus'))
     this.NavMenuselect(this.$route.path, null)
+    this.$websocket.dispatch('WEBSOCKET_INIT') // 初始化websocket
+  },
+  computed: {
+    getMsg () {
+      return this.$websocket.getters.getMsg
+    }
+  },
+  beforeDestroy () {
+    this.$websocket.dispatch('webSocketclose')
+  },
+  destroyed () {
+    this.$websocket.dispatch('webSocketclose')
   },
   mounted () {
     let cacheuser = JSON.parse(localStorage.getItem('user'))
@@ -370,8 +382,30 @@ export default {
         }, 400)
       }
     },
-    '$route.path': function (newVal, oldVal) {
-
+    '$route.path': function (newVal, oldVal) {},
+    getMsg (event) {
+      var res = JSON.parse(event.data)
+      if (res.state === 200) {
+        if (res.type === 300 || res.type === 500) {
+          this.$message({
+            title: '提示',
+            message: res.type === 300 ? '你已被管理员强制下线，系统即将退出！' : '您的账户已再其他地方登录，系统即将退出！',
+            duration: 1000,
+            type: 'error'
+          })
+          let that = this
+          setTimeout(() => {
+            that.$websocket.dispatch('webSocketclose')
+            that.exit()
+          }, 1000)
+        } else if (res.type === 100) {
+          this.$websocket.dispatch('webSocketclose')
+          this.$router.push({
+            name: 'Login'
+          })
+        //   alert('')
+        }
+      }
     }
   }
 }
