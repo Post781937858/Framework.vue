@@ -10,7 +10,7 @@
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
     "@fortawesome/vue-fontawesome": "^0.1.9",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.4.3",
     "echarts": "^4.6.0",
     "element-resize-detector": "^1.2.1",
